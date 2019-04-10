@@ -23,7 +23,7 @@ void InitTask(void)
 
 void UploadTask(void)
 {
-	UploadRemoteData(Remote_Get(),7);//FIXME:
+	UploadRemoteData(Remote_Get(),7);
 }
 
 void ControlTask(void)
@@ -33,24 +33,21 @@ void ControlTask(void)
 	int i = 0;
 	if (InvertActrRawData())
 	{
-		/*for (i = 0; i < 12; i++)
+		for (i = 0; i < 12; i++)
 		{
-			printf("%.4f ", actrAngle[i]);
+			SetActrPosition(actrAngle[i], devIDList[i]);
 		}
-		printf("\r\n");*/
-		if (CheckActrTargetPosVal())
+		/*if (CheckActrTargetPosVal())
 		{
 			for (i = 0; i < 12; i++)
 			{
-				//if(devIDList[i]==125)//||devIDList[i]==125)
-				//printf("Angle:%.2f,ID:%d\r\n",actrAngle[i], devIDList[i]);
 				SetActrPosition(actrAngle[i], devIDList[i]);
 			}
 		}
 		else
 		{
 			//BEEP_Alert(1);
-		}
+		}*/
 	}
 }
 
@@ -151,45 +148,49 @@ unsigned int LowPirorityTaskFlag = 0;
  */
 void HandleLowPirorityTask(void)
 {
-	DisplayTask();
 	KeyTask();
-
-	if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_POS))
+	if(TASK_SEARCH_FLAG(TASK_FLAG_CONTROL) == 0)		//如果未处理ControlTask和UploadTask，不进行显示和请求电机数据
 	{
-		TASK_RESET_FLAG(TASK_FLAG_REPORT_POS);
-		ReportTask(TASK_FLAG_REPORT_POS);
+		if(TASK_SEARCH_FLAG(TASK_FLAG_UPLOAD) == 0)
+		{
+			DisplayTask();
+			if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_POS))
+			{
+				TASK_RESET_FLAG(TASK_FLAG_REPORT_POS);
+				ReportTask(TASK_FLAG_REPORT_POS);
+			}
+			if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_VEL))
+			{
+				TASK_RESET_FLAG(TASK_FLAG_REPORT_VEL);
+				ReportTask(TASK_FLAG_REPORT_VEL);
+			}
+			if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_CUR))
+			{
+				TASK_RESET_FLAG(TASK_FLAG_REPORT_CUR);
+				ReportTask(TASK_FLAG_REPORT_CUR);
+			}
+			if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_EXECPTION))
+			{
+				TASK_RESET_FLAG(TASK_FLAG_REPORT_EXECPTION);
+				ReportTask(TASK_FLAG_REPORT_EXECPTION);
+			}
+			if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_ALL))
+			{
+				TASK_RESET_FLAG(TASK_FLAG_REPORT_ALL);
+				ReportTask(TASK_FLAG_REPORT_ALL);
+			}
+		}
+		else
+		{
+			TASK_RESET_FLAG(TASK_FLAG_UPLOAD);
+			UploadTask();
+		}
 	}
-	if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_VEL))
-	{
-		TASK_RESET_FLAG(TASK_FLAG_REPORT_VEL);
-		ReportTask(TASK_FLAG_REPORT_VEL);
-	}
-	if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_CUR))
-	{
-		TASK_RESET_FLAG(TASK_FLAG_REPORT_CUR);
-		ReportTask(TASK_FLAG_REPORT_CUR);
-	}
-	if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_EXECPTION))
-	{
-		TASK_RESET_FLAG(TASK_FLAG_REPORT_EXECPTION);
-		ReportTask(TASK_FLAG_REPORT_EXECPTION);
-	}
-	if (TASK_SEARCH_FLAG(TASK_FLAG_REPORT_ALL))
-	{
-		TASK_RESET_FLAG(TASK_FLAG_REPORT_ALL);
-		ReportTask(TASK_FLAG_REPORT_ALL);
-	}
-	if (TASK_SEARCH_FLAG(TASK_FLAG_UPLOAD))
-	{
-		TASK_RESET_FLAG(TASK_FLAG_UPLOAD);
-		UploadTask();
-	}	
-	if (TASK_SEARCH_FLAG(TASK_FLAG_CONTROL))
+	else
 	{
 		TASK_RESET_FLAG(TASK_FLAG_CONTROL);
 		ControlTask();
-	}	
-	
+	}
 }
 
 /**

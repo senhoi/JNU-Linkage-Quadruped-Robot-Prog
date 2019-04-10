@@ -397,16 +397,6 @@
               <FilePath>.\system_stm32f4xx.c</FilePath>
             </File>
             <File>
-              <FileName>interact.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\interact.c</FilePath>
-            </File>
-            <File>
-              <FileName>tasks.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\tasks.c</FilePath>
-            </File>
-            <File>
               <FileName>actuator.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\actuator.c</FilePath>
@@ -415,6 +405,16 @@
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
+            </File>
+            <File>
+              <FileName>interact.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\interact.c</FilePath>
+            </File>
+            <File>
+              <FileName>tasks.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\tasks.c</FilePath>
             </File>
           </Files>
         </Group>
