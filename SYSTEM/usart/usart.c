@@ -1,6 +1,6 @@
 #include "usart.h"
 
-volatile uint8_t FrameState = 0;	
+volatile uint8_t FrameState = 0;
 
 void USART1_Init(u32 bound)
 {
@@ -114,17 +114,16 @@ void UART4_Init(u32 bound)
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 #else
-	#if RCV_SIG == SBUS_IN
+#if RCV_SIG == SBUS_IN
 	USART_InitStructure.USART_BaudRate = bound;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_2;
 	USART_InitStructure.USART_Parity = USART_Parity_Even;
 	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	#endif
 #endif
-	
-	
+#endif
+
 	USART_Init(UART4, &USART_InitStructure);
 	USART_Cmd(UART4, ENABLE);
 
@@ -137,196 +136,80 @@ void UART4_Init(u32 bound)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-
 uint8_t RxStream[48];
 void USART1_IRQHandler(void)
 {
 	//55 AA
 	//AA 55
-	
-	static uint8_t RxData;	
-	
+
+	static uint8_t RxData;
+
 	static uint8_t Counter = 0, i = 0;
-	if(USART_GetFlagStatus(USART1, USART_IT_RXNE) != RESET)
+	if (USART_GetFlagStatus(USART1, USART_IT_RXNE) != RESET)
 	{
 		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
 		RxData = USART_ReceiveData(USART1);
 		//USART_SendData(USART1, RxData);
 		//USART1 -> DR = RxData;
-		switch(Counter)
+		switch (Counter)
 		{
-			case 0:		//Wait Start Signal[1]
-				if(RxData == 0x55)
-					Counter++;
-				else
-					Counter = 0;
-				break;
-			case 1:		//Wait Start Signal[2]
-				if(RxData == 0xAA)
-				{
-					i = 0;
-					Counter++;
-					LED0 = 1;		//上升沿表示帧起始匹配
-				}
-				else
-					if(RxData == 0x55);
-					else
-						Counter = 0;
-				break;
-			case 2:		//Data Recieving
-				RxStream[i] = RxData;
-				i++;
-				if(i >= 48)
-				{
-					i = 0;
-					Counter ++;
-				}
-				break;
-			case 3:		//Wait End Signal[1]
-				if(RxData == 0xAA)
-					Counter++;
-				else
-					Counter = 0;
-				break;
-			case 4:		//Wait End Signal[2]
-				if(RxData == 0x55)		//End Signal[2] Matched
-				{
-					LED0 = 0;		//下降沿表示结束帧匹配
-					
-					*((volatile uint8_t*)&FrameState) = 48;
-					
-					
-				}
-				Counter = 0;
-				break;
-			default:
-				Counter = 0;
-				break;
-		}
-	}
-
-	
-	
-	
-	
-	/*	发 送 中 断	*/
-//	if(USART_GetITStatus(USART3, USART_IT_TC))	//Tx Int
-//	{
-//		USART_ClearITPendingBit(USART1, USART_IT_TC);
-//		if(TxIndex < MsgLength)
-//			USART_SendData(USART1, TxMsg[TxIndex]);
-//		TxIndex++;
-//	}
-
-	
-	
-	
-	
-	
-	
-	
-	
-	/*static uint32_uint8_t temp;
-	u8 Res;
-	if (USART_GetFlagStatus(USART1, USART_FLAG_ORE) != RESET)
-	{
-		USART_ReceiveData(USART1);
-		USART_ClearFlag(USART1, USART_FLAG_ORE);	
-		//printf("ORE\r\n");		
-	}
-	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	{
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-		Res = USART_ReceiveData(USART1);
-		USART1->DR = Res;
-		//printf("%x ",Res);
-		if ((USART1_RX_STA & 0x8000) == 0) //接收未完成
-		{
-			if (USART1_RX_STA & 0x4000) //接收到了0x0d
-			{
-
-				if (Res != 0x0a)
-				{
-					USART1_RX_STA &= 0xBFFF; //非停止位，继续接收
-					USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = 0x0d;
-					USART1_RX_STA++;
-					USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = Res;
-					USART1_RX_STA++;
-				}
-				else
-				{
-					USART1_RX_STA |= 0x8000; //接收完成了
-					if((USART1_RX_STA & 0x3fff) == 48)
-						LED1 = !LED1;
-				}
-			}
-			else //还没收到0X0D
-			{
-				if (Res == 0x0d)
-				{
-						USART1_RX_STA |= 0x4000;
-				}
-				else
-				{
-					USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = Res;
-					USART1_RX_STA++;
-					if (USART1_RX_STA > (USART_REC_LEN - 1))
-						USART1_RX_STA = 0;
-				}
-			}
-		}
-	}*/
-	
-	
-	/*
-	static uint32_uint8_t head;
-	static uint16_uint8_t end;
-	u8 Res;
-	if (USART_GetFlagStatus(USART1, USART_FLAG_ORE) != RESET)
-	{
-		USART_ReceiveData(USART1);
-		USART_ClearFlag(USART1, USART_FLAG_ORE);		
-	}
-	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET)
-	{
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-		Res = USART_ReceiveData(USART1);
-		USART1->DR = Res;
-		if(USART1_RX_STA & 0x4000)
-		{
-			end.u8[1] = end.u8[0];
-			end.u8[0] = Res;
-			if(end.u16 == 0x0D0A)
-			{
-				USART1_RX_STA--;
-				USART1_RX_STA |= 0x8000;
-				LED1 = 0;
-				if((USART1_RX_STA & 0X3FFF) == 48)
-					LED0 = !LED0;
-			}
+		case 0: //Wait Start Signal[1]
+			if (RxData == 0x55)
+				Counter++;
 			else
+				Counter = 0;
+			break;
+		case 1: //Wait Start Signal[2]
+			if (RxData == 0xAA)
 			{
-				USART1_RX_STA++;
-				USART1_RX_BUF[USART1_RX_STA & 0X3FFF] = Res;
+				i = 0;
+				Counter++;
+				LED0 = 1; //上升沿表示帧起始匹配
 			}
-		}
-		else
-		{
-			head.u8[3] = head.u8[2];
-			head.u8[2] = head.u8[1];
-			head.u8[1] = head.u8[0];
-			head.u8[0] = Res;
-			if(head.u32 == 0xAA55AA55)
+			else if (RxData == 0x55)
+				;
+			else
+				Counter = 0;
+			break;
+		case 2: //Data Recieving
+			RxStream[i] = RxData;
+			i++;
+			if (i >= 48)
 			{
-				USART1_RX_STA = 0;
-				USART1_RX_STA |= 0x4000;
-				LED1 = 1;
+				i = 0;
+				Counter++;
 			}
+			break;
+		case 3: //Wait End Signal[1]
+			if (RxData == 0xAA)
+				Counter++;
+			else
+				Counter = 0;
+			break;
+		case 4:					//Wait End Signal[2]
+			if (RxData == 0x55) //End Signal[2] Matched
+			{
+				LED0 = 0; //下降沿表示结束帧匹配
+
+				*((volatile uint8_t *)&FrameState) = 48;
+			}
+			Counter = 0;
+			break;
+		default:
+			Counter = 0;
+			break;
 		}
 	}
-	*/
-}
 
+	/*	发 送 中 断	*/
+	//	if(USART_GetITStatus(USART3, USART_IT_TC))	//Tx Int
+	//	{
+	//		USART_ClearITPendingBit(USART1, USART_IT_TC);
+	//		if(TxIndex < MsgLength)
+	//			USART_SendData(USART1, TxMsg[TxIndex]);
+	//		TxIndex++;
+	//	}*/
+}
 
 void USART3_IRQHandler(void)
 {
