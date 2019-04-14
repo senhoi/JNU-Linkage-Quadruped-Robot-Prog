@@ -333,6 +333,153 @@ int SetActrSpeedOutputUpperLimit(float speedSetUpperLimit, uint32_t actrID)
 }
 
 //*********************************************************************************
+//函数定义: SetActrTshapPosMaxSpeed
+//描    述：设置执行器ProfilePos模式速度上限
+//入口参数: maxSpd  actrID
+//出口参数: 程序执行结果
+//备    注：
+//Editor：
+//*********************************************************************************
+int SetActrTshapPosMaxSpeed(float maxSpd, uint32_t actrID)
+{
+    uint32_t i;
+    int32_t tmpSpd;
+    ActrParaTypedef *pActrPara = NULL;
+    pActrPara = FindActrDevByID(actrID);
+    if (pActrPara == NULL)
+    {
+        return SET_PARA_ERR_FIND_DEV;
+    }
+    if ((maxSpd < -1.0f) || (maxSpd > 1.0f))
+    {
+        return SET_PARA_ERR_OUT_RANGE;
+    }
+
+    g_tCanTxMsg.DLC = 0x05;
+
+    g_tCanTxMsg.Data[CAN_FRAME_BIT_CMD] = ACTR_CMD_SET_TSHAP_POS_MAX_SPEED;
+
+    g_tCanTxMsg.StdId = actrID;
+
+    tmpSpd = (int32_t)(maxSpd * IQ24Factor);
+
+    for (i = 0; i < 4; i++)
+    {
+        g_tCanTxMsg.Data[i + CAN_FRAME_BIT_DAT_HH] = (tmpSpd >> (8 * (3 - i)));
+    }
+
+    if (Can1BusyCheck() == CAN_BUS_STATE_FREE)
+    {
+
+        CAN_Transmit(CAN1, &g_tCanTxMsg);
+    }
+    else
+    {
+        return SET_PARA_ERR_CAN_T_ERR;
+    }
+
+    return SET_PARA_SUCCESS;
+}
+
+//*********************************************************************************
+//函数定义: SetActrTshapPosAccelerate
+//描    述：设置执行器ProfilePos模式加速度
+//入口参数: acc  actrID
+//出口参数: 程序执行结果
+//备    注：
+//Editor：
+//*********************************************************************************
+int SetActrTshapPosAccelerate(float acc, uint32_t actrID)
+{
+    uint32_t i;
+    int32_t tmpAcc;
+    ActrParaTypedef *pActrPara = NULL;
+    pActrPara = FindActrDevByID(actrID);
+    if (pActrPara == NULL)
+    {
+        return SET_PARA_ERR_FIND_DEV;
+    }
+    if ((acc < -1.0f) || (acc > 1.0f))
+    {
+        return SET_PARA_ERR_OUT_RANGE;
+    }
+
+    g_tCanTxMsg.DLC = 0x05;
+
+    g_tCanTxMsg.Data[CAN_FRAME_BIT_CMD] = ACTR_CMD_GET_TSHAP_POS_ACCELERATE;
+
+    g_tCanTxMsg.StdId = actrID;
+
+    tmpAcc = (int32_t)(acc * IQ24Factor);
+
+    for (i = 0; i < 4; i++)
+    {
+        g_tCanTxMsg.Data[i + CAN_FRAME_BIT_DAT_HH] = (tmpAcc >> (8 * (3 - i)));
+    }
+
+    if (Can1BusyCheck() == CAN_BUS_STATE_FREE)
+    {
+
+        CAN_Transmit(CAN1, &g_tCanTxMsg);
+    }
+    else
+    {
+        return SET_PARA_ERR_CAN_T_ERR;
+    }
+
+    return SET_PARA_SUCCESS;
+}
+
+//*********************************************************************************
+//函数定义: SetActrTshapPosDecelerate
+//描    述：设置执行器ProfilePos模式加速度
+//入口参数: dec  actrID
+//出口参数: 程序执行结果
+//备    注：
+//Editor：
+//*********************************************************************************
+int SetActrTshapPosDecelerate(float dec, uint32_t actrID)
+{
+    uint32_t i;
+    int32_t tmpDec;
+    ActrParaTypedef *pActrPara = NULL;
+    pActrPara = FindActrDevByID(actrID);
+    if (pActrPara == NULL)
+    {
+        return SET_PARA_ERR_FIND_DEV;
+    }
+    if ((dec < -1.0f) || (dec > 1.0f))
+    {
+        return SET_PARA_ERR_OUT_RANGE;
+    }
+
+    g_tCanTxMsg.DLC = 0x05;
+
+    g_tCanTxMsg.Data[CAN_FRAME_BIT_CMD] = ACTR_CMD_GET_TSHAP_POS_DECELERATE;
+
+    g_tCanTxMsg.StdId = actrID;
+
+    tmpDec = (int32_t)(dec * IQ24Factor);
+
+    for (i = 0; i < 4; i++)
+    {
+        g_tCanTxMsg.Data[i + CAN_FRAME_BIT_DAT_HH] = (tmpDec >> (8 * (3 - i)));
+    }
+
+    if (Can1BusyCheck() == CAN_BUS_STATE_FREE)
+    {
+
+        CAN_Transmit(CAN1, &g_tCanTxMsg);
+    }
+    else
+    {
+        return SET_PARA_ERR_CAN_T_ERR;
+    }
+
+    return SET_PARA_SUCCESS;
+}
+
+//*********************************************************************************
 //函数定义: ActrHandShake
 //描    述：执行器握手
 //入口参数: actrID 执行器ID

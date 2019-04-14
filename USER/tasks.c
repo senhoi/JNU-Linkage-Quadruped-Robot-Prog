@@ -261,6 +261,9 @@ void SubKeyTask_MODE(uint8_t KeyVal)
 				SetActrPwrState(PWR_ON, devIDList[i]);
 				SetActrSpeedOutputLowerLimit(-0.2, devIDList[i]);
 				SetActrSpeedOutputUpperLimit(0.2, devIDList[i]);
+				//SetActrTshapPosMaxSpeed(0.5, devIDList[i]);
+				//SetActrTshapPosAccelerate(0.5, devIDList[i]);
+				//SetActrTshapPosDecelerate(0.5, devIDList[i]);
 				BEEP_Normal(1);
 				//GetActrPara(ACTR_CMD_GET_ON_OFF, devIDList[i]);
 			}

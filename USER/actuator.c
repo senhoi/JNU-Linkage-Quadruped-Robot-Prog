@@ -1,6 +1,6 @@
 #include "actuator.h"
 
-uint8_t devIDList[ACTR_DEV_NUM] = {21, 78, 88, 8, 3, 33, 55, 20, 31, 2, 188, 1};
+uint8_t devIDList[ACTR_DEV_NUM] = {2, 50, 11, 30, 3, 4, 1, 7, 78, 6, 5, 8};
 //LF-RB-RF-LB
 float actrAngle[12] = {0.0f, 10.0f, 3.0f, 0.0f, -10.0f, -3.0f, 0.0f, -10.0f, -3.0f, 0.0f, 10.0f, 3.0f};
 

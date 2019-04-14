@@ -55,7 +55,9 @@
 #define ACTR_CMD_GET_INVTR_TEMP 0x60
 #define ACTR_CMD_GET_CUR_MODE 0x55
 #define ACTR_CMD_GET_EXECPTION 0xFF
-
+#define ACTR_CMD_SET_TSHAP_POS_MAX_SPEED 0x1F
+#define ACTR_CMD_SET_TSHAP_POS_ACCELERATE 0x20
+#define ACTR_CMD_SET_TSHAP_POS_DECELERATE 0x21
 #define ACTR_CMD_GET_TSHAP_POS_MAX_SPEED 0x1C
 #define ACTR_CMD_GET_TSHAP_POS_ACCELERATE 0x1D
 #define ACTR_CMD_GET_TSHAP_POS_DECELERATE 0x1E
@@ -183,6 +185,9 @@ int SetActrPosition(float posSet, uint32_t actrID);
 int SetActrSpeed(float speedSet, uint32_t actrID);
 int SetActrSpeedOutputLowerLimit(float speedSetLowerLimit, uint32_t actrID);
 int SetActrSpeedOutputUpperLimit(float speedSetUpperLimit, uint32_t actrID);
+//int SetActrTshapPosMaxSpeed(float maxSpd, uint32_t actrID);	//不确定是否可用
+//int SetActrTshapPosAccelerate(float acc, uint32_t actrID);	//不确定是否可用
+//int SetActrTshapPosDecelerate(float dec, uint32_t actrID);	//不确定是否可用
 int SetActrPwrState(ActrPwrStateTypedef PwrState, uint32_t actrID);
 int GetActrPara(uint8_t actrGetParaCmd, uint32_t actrID);
 int ActrHandShake(uint32_t actrID);
