@@ -35,6 +35,7 @@ void TIM3_IRQHandler(void)
 		if (t % 10 == 0)
 		{
 			TASK_SET_FLAG(TASK_FLAG_CONTROL);
+			TASK_SET_FLAG(TASK_FLAG_REPORT_POS);
 		}
 		if (t % 50 == 0)
 		{

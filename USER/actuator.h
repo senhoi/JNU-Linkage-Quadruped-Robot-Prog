@@ -4,6 +4,7 @@
 #include "sys.h"
 #include "SCA_ctrl.h"
 #include "usart.h"
+#include "pid.h"
 
 typedef enum ActrReportDataTypedef
 {
@@ -24,7 +25,24 @@ typedef enum ActrReportDataTypedef
 #define RM2_INDEX 3
 #define RM1_INDEX 4
 
+extern float actrPhase[ACTR_DEV_NUM];
+extern float actrRefPhase;
+extern int16_t actrRevolution[ACTR_DEV_NUM];
+extern int16_t actrRefRevolution;
+
+extern PID_Increment_t PID_LM1;
+extern PID_Increment_t PID_RM2;
+extern PID_Increment_t PID_RM1;
+
 int CheckActrTargetPosVal(void);
 void PrintActrState(ActrReportDataTypedef actrReportDataType, uint32_t actrID);
+void UpdateActrPhase(void);
+void CountActrRevolution(void);
+
+void ClearActrPhase(void);
+void ClearActrRevolution(void);
+
+void InitActrPhasePID(void);
+void CalcActrPhasePID(void);
 
 #endif

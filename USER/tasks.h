@@ -14,6 +14,7 @@
 #include "sbus.h"
 #include "remote.h"
 #include "math.h"
+#include "usr_math.h"
 
 extern unsigned int LowPirorityTaskFlag;
 extern int ActrHomingError;

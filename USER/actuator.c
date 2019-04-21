@@ -1,8 +1,15 @@
 #include "actuator.h"
 
 uint8_t devIDList[ACTR_DEV_NUM] = {55, 3, 31, 8, 2};
-//M1-M2-T-M3-M4
+//LM1-LM2-TM-RM2-RM1
 float actrAngle[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+
+float prev_actrPhase[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+float actrPhase[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+float actrRefPhase = 0.0f;
+
+int16_t actrRevolution[ACTR_DEV_NUM] = {0, 0, 0, 0, 0};
+int16_t actrRefRevolution = 0;
 
 /**
  * º¯Êý¶¨Òå: PrintActrState
@@ -85,4 +92,100 @@ void PrintActrState(ActrReportDataTypedef actrReportDataType, uint32_t actrID)
 	default:
 		break;
 	}
+}
+
+void InvertActrPos2Phase(int actr_index)
+{
+	static ActrParaTypedef *pActrParaDev = NULL;
+
+	pActrParaDev = FindActrDevByID(devIDList[actr_index]);
+
+	if (pActrParaDev->actrPostion <= -64.0f)
+		actrPhase[actr_index] = (pActrParaDev->actrPostion + 128.0f) / 16.0f;
+	else if (pActrParaDev->actrPostion <= 0.0f)
+		actrPhase[actr_index] = (pActrParaDev->actrPostion + 64.0f) / 16.0f;
+	else if (pActrParaDev->actrPostion <= 64.0f)
+		actrPhase[actr_index] = (pActrParaDev->actrPostion + 0.0f) / 16.0f;
+	else if (pActrParaDev->actrPostion <= 128.0f)
+		actrPhase[actr_index] = (pActrParaDev->actrPostion - 64.0f) / 16.0f;
+
+	switch (actr_index)
+	{
+	case LM1_INDEX:
+	case RM2_INDEX:
+
+		actrPhase[actr_index] = 4 - actrPhase[actr_index];
+		break;
+
+	default:
+		break;
+	}
+}
+
+void UpdateActrPhase(void)
+{
+	InvertActrPos2Phase(LM1_INDEX);
+	InvertActrPos2Phase(LM2_INDEX);
+	InvertActrPos2Phase(RM2_INDEX);
+	InvertActrPos2Phase(RM1_INDEX);
+
+	actrRefPhase = actrPhase[LM2_INDEX];
+}
+
+void CountActrRevolution(void)
+{
+	for (int i = 0; i < ACTR_DEV_NUM; i++)
+	{
+		if (prev_actrPhase[i] < 1.0f && actrPhase[i] > 3.0f)
+			actrRevolution[i]--;
+		else if (prev_actrPhase[i] > 3.0f && actrPhase[i] < 1.0f)
+			actrRevolution[i]++;
+		prev_actrPhase[i] = actrPhase[i];
+	}
+	actrRefRevolution = actrRevolution[LM2_INDEX];
+}
+
+void ClearActrPhase(void)
+{
+	for (int i = 0; i < ACTR_DEV_NUM; i++)
+	{
+		prev_actrPhase[i] = 0.0f;
+		actrPhase[i] = 0.0f;
+	}
+	actrRefPhase = 0.0f;
+}
+
+void ClearActrRevolution(void)
+{
+	for (int i = 0; i < ACTR_DEV_NUM; i++)
+	{
+		actrRevolution[i] = 0;
+	}
+	actrRefRevolution = 0;
+}
+
+PID_Increment_t PID_LM1;
+PID_Increment_t PID_RM2;
+PID_Increment_t PID_RM1;
+
+void InitActrPhasePID(void)
+{
+	PID_Increment_Reset(&PID_LM1, 0.3f, 0.001f, 0, 0.01, 0.1f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_RM2, 0.3f, 0.001f, 0, 0.01, 0.1f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_RM1, 0.3f, 0.001f, 0, 0.01, 0.1f, 0.1f, 1.0f);
+}
+
+void CalcActrPhasePID(void)
+{
+	PID_LM1.Ref = actrRefPhase + actrRefRevolution * 4.0f;
+	PID_LM1.Feedback = actrPhase[LM1_INDEX] + actrRevolution[LM1_INDEX] * 4.0f;
+	PID_Increment_Calc(&PID_LM1);
+
+	PID_RM2.Ref = actrRefPhase + actrRefRevolution * 4.0f;
+	PID_RM2.Feedback = actrPhase[RM2_INDEX] + actrRevolution[RM2_INDEX] * 4.0f;
+	PID_Increment_Calc(&PID_RM2);
+
+	PID_RM1.Ref = actrRefPhase + actrRefRevolution * 4.0f;
+	PID_RM1.Feedback = actrPhase[RM1_INDEX] + actrRevolution[RM1_INDEX] * 4.0f;
+	PID_Increment_Calc(&PID_RM1);
 }

@@ -411,6 +411,16 @@
               <FileType>1</FileType>
               <FilePath>.\tasks.c</FilePath>
             </File>
+            <File>
+              <FileName>usr_math.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\usr_math.c</FilePath>
+            </File>
+            <File>
+              <FileName>pid.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\pid.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

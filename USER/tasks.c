@@ -20,16 +20,32 @@ void InitTask(void)
 	ActrDevInit();
 
 	ShowModeSelection(-1);
+
+	InitActrPhasePID();
 }
 
 void ControlTask(void)
 {
 	if (MoveForwardFlag)
 	{
-		SetActrSpeed(-0.2f * RemoteData[1] / 128.0f, devIDList[LM1_INDEX]);
-		SetActrSpeed(0.2f * RemoteData[1] / 128.0f, devIDList[LM2_INDEX]);
-		SetActrSpeed(-0.2f * RemoteData[1] / 128.0f, devIDList[RM2_INDEX]);
-		SetActrSpeed(0.2f * RemoteData[1] / 128.0f, devIDList[RM1_INDEX]);
+		if (actrRefPhase < 2.0f)
+		{
+			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_LM1.Output, devIDList[LM1_INDEX]);
+			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)), devIDList[LM2_INDEX]);
+			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_RM2.Output, devIDList[RM2_INDEX]);
+			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) + PID_RM1.Output, devIDList[RM1_INDEX]);
+		}
+		else
+		{
+			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)) - PID_LM1.Output, devIDList[LM1_INDEX]);
+			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)), devIDList[LM2_INDEX]);
+			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)) - PID_RM2.Output, devIDList[RM2_INDEX]);
+			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)) + PID_RM1.Output, devIDList[RM1_INDEX]);
+		}
+
+		UpdateActrPhase();
+		CountActrRevolution();
+		CalcActrPhasePID();
 	}
 	else
 	{
@@ -41,7 +57,10 @@ void ControlTask(void)
 
 	if (MoveTurningFlag)
 	{
-		SetActrPosition(2.2f * RemoteData[2] / 128.0f, devIDList[TM_INDEX]);
+		if (fabs(actrRefPhase - 1.0f) < 0.5f)
+			SetActrPosition(2.2f * RemoteData[2] / 128.0f, devIDList[TM_INDEX]);
+		else if (fabs(actrRefPhase - 3.0f) < 0.5f)
+			SetActrPosition(-2.2f * RemoteData[2] / 128.0f, devIDList[TM_INDEX]);
 	}
 	else
 	{
@@ -358,6 +377,7 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 	switch (KeyVal)
 	{
 	case KEY0_PRES:
+		BEEP_Alert(3);
 		MoveForwardFlag = 1;
 		MoveTurningFlag = 1;
 		break;
@@ -365,6 +385,8 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 	case KEY1_PRES:
 		MoveForwardFlag = 0;
 		MoveTurningFlag = 0;
+		ClearActrPhase();
+		ClearActrRevolution();
 		switch (ActrPosCursorIndex)
 		{
 		case 0:
@@ -377,7 +399,7 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 		break;
 
 	case KEY2_PRES:
-		if (ActrHomingCorrect == ACTR_DEV_NUM)
+		//if (ActrHomingCorrect == ACTR_DEV_NUM)
 		{
 			for (int i = 0; i < ACTR_DEV_NUM; i++)
 			{
@@ -406,10 +428,10 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 				ActrHomingErrorID[i] = 0;
 			}
 		}
-		else
-		{
-			BEEP_Error(2);
-		}
+		//else
+		//{
+		//	BEEP_Error(2);
+		//}
 		break;
 
 	case WKUP_PRES:
