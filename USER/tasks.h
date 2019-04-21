@@ -15,6 +15,7 @@
 #include "remote.h"
 #include "math.h"
 #include "usr_math.h"
+#include "auto.h"
 
 extern unsigned int LowPirorityTaskFlag;
 extern int ActrHomingError;
@@ -40,6 +41,12 @@ typedef enum task_flag
 #define TASK_STOP_REGULAR_REPORT (ReportTaskFlag = 0)
 #define TASK_BEGIN_REGULAR_REPORT (ReportTaskFlag = 1)
 #define TASK_CHECK_REGULAR_REPORT_FLAG (ReportTaskFlag == 1)
+
+#define MANUAL 0
+#define AUTO 1
+
+#define STOP 0
+#define RUN 1
 
 void InitTask(void);
 void KeyTask(void);

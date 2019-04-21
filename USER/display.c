@@ -7,7 +7,15 @@ void ShowInfo(void)
 	static ActrParaTypedef *pActrParaDev = NULL;
 	char sActrState[12];
 	char prev_sActrState[12];
-	char sFootGrounding[4][3] = {{"LM1"}, {"LM2"}, {"RM2"}, {"RM1"}};
+	char sFootGrounding[4][4] = {{"LM1"}, {"LM2"}, {"RM2"}, {"RM1"}};
+
+	static int shadow_ActivateFlag = -1;
+	static int shadow_AutoManualFlag = -1;
+	static int shadow_InterfaceIndex = -1;
+	static uint8_t shadow_FootGrounding = 0xff;
+
+	extern int ActivateFlag;
+	extern int AutoManualFlag;
 
 	extern uint8_t FootGrounding;
 
@@ -28,18 +36,54 @@ void ShowInfo(void)
 	}
 	LCD_FastShowString(INFO_DISP_SET_COL(INFO_DISP_COL_TAB), INFO_DISP_SET_ROW(1), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, (u8 *)prev_sActrState, (u8 *)sActrState);
 
-	for (int i = 0; i < 4; i++)
+	if (shadow_FootGrounding != FootGrounding || shadow_InterfaceIndex != InterfaceIndex)
 	{
-		if ((FootGrounding & (0x01 << i)))
+		for (int i = 0; i < 4; i++)
+		{
+			if ((FootGrounding & (0x01 << i)))
+			{
+				POINT_COLOR = RED;
+			}
+			else
+			{
+				POINT_COLOR = GREEN;
+			}
+			LCD_ShowString(INFO_DISP_SET_COL(INFO_DISP_COL_TAB) + INFO_DISP_SET_COL(INFO_DISP_COL_TAB) * 2 * i, INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, (u8 *)sFootGrounding[i]);
+		}
+	}
+
+	if (shadow_ActivateFlag != ActivateFlag || shadow_InterfaceIndex != InterfaceIndex)
+	{
+		if (ActivateFlag == STOP)
 		{
 			POINT_COLOR = RED;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(1), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "STOP");
 		}
-		else
+		else if (ActivateFlag == RUN)
 		{
 			POINT_COLOR = GREEN;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(1), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "RUN ");
 		}
-		//LCD_ShowString(INFO_DISP_SET_COL(INFO_DISP_COL_TAB) * (i + 1), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, (u8 *)sFootGrounding[i]);
 	}
+
+	if (shadow_AutoManualFlag != AutoManualFlag || shadow_InterfaceIndex != InterfaceIndex)
+	{
+		if (AutoManualFlag == AUTO)
+		{
+			POINT_COLOR = RED;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "AUTO  ");
+		}
+		else if (AutoManualFlag == MANUAL)
+		{
+			POINT_COLOR = GREEN;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "MANUAL");
+		}
+	}
+
+	shadow_ActivateFlag = ActivateFlag;
+	shadow_AutoManualFlag = AutoManualFlag;
+	shadow_InterfaceIndex = InterfaceIndex;
+	shadow_FootGrounding = FootGrounding;
 }
 
 int ModeCursorIndex = 1;
@@ -192,7 +236,7 @@ void ShowActrPosVal(void)
 {
 	static ActrParaTypedef *pActrParaDev = NULL;
 
-	extern float actrAngle[ACTR_DEV_NUM];
+	extern float actrSpd[ACTR_DEV_NUM];
 	extern float actrPhase[ACTR_DEV_NUM];
 
 	static char prev_sActrPos[ACTR_DEV_NUM][18];
@@ -209,7 +253,7 @@ void ShowActrPosVal(void)
 		GetActrPara(ACTR_CMD_GET_POSTION, devIDList[i]);
 		pActrParaDev = FindActrDevByID(devIDList[i]);
 
-		sprintf(sActrPos[i], "%7.2fR %7.2fR", pActrParaDev->actrPostion, actrAngle[i]);
+		sprintf(sActrPos[i], "%7.2fR %7.2fR", pActrParaDev->actrPostion, actrSpd[i]);
 		sprintf(sActrPhase[i], "%6.4f C:%3d", actrPhase[i], actrRevolution[i]);
 
 		POINT_COLOR = BLACK;

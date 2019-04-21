@@ -1,8 +1,7 @@
 #include "tasks.h"
 
-int MoveForwardFlag = 0;
-int MoveTurningFlag = 0;
-
+int ActivateFlag = STOP;
+int AutoManualFlag = MANUAL;
 void InitTask(void)
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
@@ -26,48 +25,66 @@ void InitTask(void)
 
 void ControlTask(void)
 {
-	if (MoveForwardFlag)
+	switch (AutoManualFlag)
 	{
+	case AUTO:
+		GetCtrlData(CTRL_SRC_AUTO);
+		break;
+
+	case MANUAL:
+		GetCtrlData(CTRL_SRC_REMOTE);
+		break;
+	}
+
+	if (ActivateFlag == RUN)
+	{
+
+		/*actrSpd[LM1_INDEX] = -PID_LM1.Output;
+		actrSpd[LM2_INDEX] = 0;
+		actrSpd[RM2_INDEX] = -PID_RM2.Output;
+		actrSpd[RM1_INDEX] = +PID_RM1.Output;*/
+
 		if (actrRefPhase < 2.0f)
 		{
-			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_LM1.Output, devIDList[LM1_INDEX]);
-			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)), devIDList[LM2_INDEX]);
-			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_RM2.Output, devIDList[RM2_INDEX]);
-			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) + PID_RM1.Output, devIDList[RM1_INDEX]);
+			actrSpd[LM1_INDEX] = -0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
+			actrSpd[LM2_INDEX] = 0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI));
+			actrSpd[RM2_INDEX] = -0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+			actrSpd[RM1_INDEX] = 0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.15f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 		}
 		else
 		{
-			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)) - PID_LM1.Output, devIDList[LM1_INDEX]);
-			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)), devIDList[LM2_INDEX]);
-			SetActrSpeed(-0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)) - PID_RM2.Output, devIDList[RM2_INDEX]);
-			SetActrSpeed(0.6f * RemoteData[1] / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.1f, 1 / sqrt(2 * PI)) + PID_RM1.Output, devIDList[RM1_INDEX]);
+			actrSpd[LM1_INDEX] = -0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
+			actrSpd[LM2_INDEX] = 0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.15f, 1 / sqrt(2 * PI));
+			actrSpd[RM2_INDEX] = -0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.15f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+			actrSpd[RM1_INDEX] = 0.6f * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.15f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 		}
 
 		UpdateActrPhase();
 		CountActrRevolution();
 		CalcActrPhasePID();
-	}
-	else
-	{
-		SetActrSpeed(0.0f, devIDList[LM1_INDEX]);
-		SetActrSpeed(0.0f, devIDList[LM2_INDEX]);
-		SetActrSpeed(0.0f, devIDList[RM2_INDEX]);
-		SetActrSpeed(0.0f, devIDList[LM1_INDEX]);
-	}
 
-	if (MoveTurningFlag)
-	{
 		if (fabs(actrRefPhase - 1.0f) < 0.5f)
-			SetActrPosition(2.2f * RemoteData[2] / 128.0f, devIDList[TM_INDEX]);
+		{
+			SetActrPosition(TM_LIMIT * CtrlVal_Turning / 128.0f, devIDList[TM_INDEX]);
+		}
 		else if (fabs(actrRefPhase - 3.0f) < 0.5f)
-			SetActrPosition(-2.2f * RemoteData[2] / 128.0f, devIDList[TM_INDEX]);
+		{
+			SetActrPosition(-TM_LIMIT * CtrlVal_Turning / 128.0f, devIDList[TM_INDEX]);
+		}
 	}
 	else
 	{
+		actrSpd[LM1_INDEX] = 0;
+		actrSpd[LM2_INDEX] = 0;
+		actrSpd[RM2_INDEX] = 0;
+		actrSpd[RM1_INDEX] = 0;
+
 		SetActrPosition(0.0f, devIDList[TM_INDEX]);
 	}
-
-	//SetActrPosition(float posSet, uint32_t actrID);
+	SetActrSpeed(actrSpd[LM1_INDEX], devIDList[LM1_INDEX]);
+	SetActrSpeed(actrSpd[LM2_INDEX], devIDList[LM2_INDEX]);
+	SetActrSpeed(actrSpd[RM2_INDEX], devIDList[RM2_INDEX]);
+	SetActrSpeed(actrSpd[RM1_INDEX], devIDList[RM1_INDEX]);
 }
 
 /**
@@ -378,13 +395,12 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 	{
 	case KEY0_PRES:
 		BEEP_Alert(3);
-		MoveForwardFlag = 1;
-		MoveTurningFlag = 1;
+		AutoManualFlag = MANUAL;
+		ActivateFlag = RUN;
 		break;
 
 	case KEY1_PRES:
-		MoveForwardFlag = 0;
-		MoveTurningFlag = 0;
+		ActivateFlag = STOP;
 		ClearActrPhase();
 		ClearActrRevolution();
 		switch (ActrPosCursorIndex)
@@ -436,6 +452,9 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 
 	case WKUP_PRES:
 		MoveActrPosCursor();
+		AutoManualFlag = AUTO;
+		ActivateFlag = RUN;
+		InitAutoData();
 		break;
 	}
 }
@@ -462,9 +481,21 @@ void SubKeyTask_HOMING_CHECK(uint8_t KeyVal)
 	switch (KeyVal)
 	{
 	case KEY0_PRES:
-		ActrHomingErrorID[ActrHomingError] = devIDList[id_index];
-		ActrHomingError++;
-		ShowActrHoming(HOMING_FLAG_ERROR);
+		//ActrHomingErrorID[ActrHomingError] = devIDList[id_index];
+		//ActrHomingError++;
+		//ShowActrHoming(HOMING_FLAG_ERROR);
+		BEEP_Alert(2);
+		for (int i = 0; i < ACTR_DEV_NUM; i++)
+		{
+			GetActrPara(ACTR_CMD_GET_CUR_MODE, devIDList[i]);
+
+			if (pActrParaDev->actrMode != ACTR_MODE_TSHAP_POS)
+			{
+				SetActrMode(ACTR_MODE_TSHAP_POS, devIDList[i]);
+			}
+
+			SetActrPosition(0.0f, devIDList[i]);
+		}
 		break;
 	case KEY1_PRES:
 		InterfaceIndex = ROBOT_INTERFACE_MODE;

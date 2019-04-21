@@ -25,6 +25,9 @@ typedef enum ActrReportDataTypedef
 #define RM2_INDEX 3
 #define RM1_INDEX 4
 
+#define TM_LIMIT 2.2f
+
+extern float actrSpd[ACTR_DEV_NUM];
 extern float actrPhase[ACTR_DEV_NUM];
 extern float actrRefPhase;
 extern int16_t actrRevolution[ACTR_DEV_NUM];

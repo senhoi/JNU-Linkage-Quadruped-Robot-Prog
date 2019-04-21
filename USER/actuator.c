@@ -2,7 +2,7 @@
 
 uint8_t devIDList[ACTR_DEV_NUM] = {55, 3, 31, 8, 2};
 //LM1-LM2-TM-RM2-RM1
-float actrAngle[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
+float actrSpd[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
 float prev_actrPhase[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 float actrPhase[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
@@ -170,9 +170,9 @@ PID_Increment_t PID_RM1;
 
 void InitActrPhasePID(void)
 {
-	PID_Increment_Reset(&PID_LM1, 0.3f, 0.001f, 0, 0.01, 0.1f, 0.1f, 1.0f);
-	PID_Increment_Reset(&PID_RM2, 0.3f, 0.001f, 0, 0.01, 0.1f, 0.1f, 1.0f);
-	PID_Increment_Reset(&PID_RM1, 0.3f, 0.001f, 0, 0.01, 0.1f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_LM1, 0.5f, 0.0f, 0, 0.01, 1000.0f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_RM2, 0.5f, 0.0f, 0, 0.01, 1000.0f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_RM1, 0.5f, 0.0f, 0, 0.01, 1000.0f, 0.1f, 1.0f);
 }
 
 void CalcActrPhasePID(void)
