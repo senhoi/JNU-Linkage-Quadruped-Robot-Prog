@@ -8,6 +8,7 @@
 #include "tasks.h"
 #include "string.h"
 #include "led.h"
+#include "JY901.h"
 
 #define INTERFACE_NUM 6
 

@@ -34,16 +34,12 @@ void TIM3_IRQHandler(void)
 		t++;
 		if (t % 10 == 0)
 		{
-			SYNSIG = 1;
-			for (int i = 0; i < 100; i++)
-				;
-			SYNSIG = 0;
-			TASK_SET_FLAG(TASK_FLAG_UPLOAD);
 			TASK_SET_FLAG(TASK_FLAG_CONTROL);
 		}
 		if (t % 50 == 0)
 		{
 			//TASK_SET_FLAG(TASK_FLAG_REPORT_POS);
+			TASK_SET_FLAG(TASK_FLAG_REPORT_CUR);
 		}
 		if (t % 500 == 0)
 		{

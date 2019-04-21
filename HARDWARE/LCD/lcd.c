@@ -3140,4 +3140,5 @@ void LCD_FastShowString(u16 x, u16 y, u16 width, u16 height, u8 size, u8 mode, u
 		curr_p++;
 		prev_p++;
 	}
+	strcpy((char *)prev_p, (char *)curr_p);
 }

@@ -5,8 +5,6 @@
 #include "SCA_ctrl.h"
 #include "usart.h"
 
-#define ACTR_DEV_NUM 12
-
 typedef enum ActrReportDataTypedef
 {
 	ACTR_REPORT_ALL,
@@ -19,6 +17,12 @@ typedef enum ActrReportDataTypedef
 	ACTR_REPORT_INVTR_TEMP,
 	ACTR_REPORT_EXECPTION,
 } ActrReportDataTypedef;
+
+#define LM1_INDEX 0
+#define LM2_INDEX 1
+#define TM_INDEX 2
+#define RM2_INDEX 3
+#define RM1_INDEX 4
 
 int CheckActrTargetPosVal(void);
 void PrintActrState(ActrReportDataTypedef actrReportDataType, uint32_t actrID);

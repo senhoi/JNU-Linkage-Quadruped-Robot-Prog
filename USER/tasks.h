@@ -9,16 +9,16 @@
 #include "beep.h"
 #include "key.h"
 #include "timer.h"
-#include "interact.h"
 #include "actuator.h"
 #include "display.h"
 #include "sbus.h"
 #include "remote.h"
+#include "math.h"
 
 extern unsigned int LowPirorityTaskFlag;
 extern int ActrHomingError;
 extern int ActrHomingCorrect;
-extern int ActrHomingErrorID[12];
+extern int ActrHomingErrorID[ACTR_DEV_NUM];
 extern int ReportTaskFlag; //在执行器发送控制命令前关闭此标志位以禁止定时报告任务，防止总线干扰
 
 typedef enum task_flag
@@ -42,9 +42,9 @@ typedef enum task_flag
 
 void InitTask(void);
 void KeyTask(void);
-void UploadTask(void);
 void ControlTask(void);
 void HandleLowPirorityTask(void);
-void SubmissiveCtrlTask(uint8_t TriggerData);
+void CheckFootGroundingTask(void);
+void HandleDevDataTask(void);
 
 #endif

@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\HARDWARE\LCD;..\FWLIB\inc;..\HARDWARE\BEEP;..\HARDWARE\CAN;..\HARDWARE\INNFOS;..\HARDWARE\KEY;..\HARDWARE\TIMER;..\HARDWARE\SBUS;..\HARDWARE\REMOTE</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\HARDWARE\LCD;..\FWLIB\inc;..\HARDWARE\BEEP;..\HARDWARE\CAN;..\HARDWARE\INNFOS;..\HARDWARE\KEY;..\HARDWARE\TIMER;..\HARDWARE\SBUS;..\HARDWARE\REMOTE;..\HARDWARE\GYRO</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -405,11 +405,6 @@
               <FileName>display.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\display.c</FilePath>
-            </File>
-            <File>
-              <FileName>interact.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\interact.c</FilePath>
             </File>
             <File>
               <FileName>tasks.c</FileName>

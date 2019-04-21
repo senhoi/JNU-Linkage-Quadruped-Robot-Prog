@@ -10,7 +10,6 @@
 #define EN_USART1_RX 1 //使能（1）/禁止（0）串口1接收
 
 extern volatile uint8_t FrameState;
-extern uint8_t RxStream[];
 
 void USART1_Init(u32 bound);
 void USART3_Init(u32 bound);

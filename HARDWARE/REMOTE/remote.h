@@ -3,29 +3,32 @@
 
 #include "stm32f4xx.h"
 
-#define SBUS_IN	1
-#define UPWM_IN	2
+#define SBUS_IN 1
+#define UPWM_IN 2
 
-#define RCV_SIG	SBUS_IN
+#define RCV_SIG SBUS_IN
 
 #include "led.h"
 #include "sbus.h"
 
-typedef enum{
-	MoveMode_Stand	= 0x00,
-	MoveMode_Walk 	= 0x01,
-	MoveMode_Trot	= 0x02,
-	MoveMode_Error	= 0xFF,
-}MoveMode_TypeDef;
+typedef enum
+{
+	MoveMode_Stand = 0x00,
+	MoveMode_Walk = 0x01,
+	MoveMode_Trot = 0x02,
+	MoveMode_Error = 0xFF,
+} MoveMode_TypeDef;
 
-typedef enum{
-	CtrlMode_Error	= 0xFF,
-	CtrlMode_XYW	= 0x00,
-	CtrlMode_NOA	= 0x01,
-	CtrlMode_RPY	= 0x02,
-}CtrlMode_TypeDef;
+typedef enum
+{
+	CtrlMode_Error = 0xFF,
+	CtrlMode_XYW = 0x00,
+	CtrlMode_NOA = 0x01,
+	CtrlMode_RPY = 0x02,
+} CtrlMode_TypeDef;
 
 extern volatile uint8_t RemoteUpdated;
+extern int8_t RemoteData[7];
 
 typedef struct Remote_t
 {
@@ -38,9 +41,9 @@ typedef struct Remote_t
 	uint16_t VA;
 	uint16_t VB;
 	uint16_t VC;
-}Remote_t;
+} Remote_t;
 
-void UpdateRemoteInfo(void* PWM_Array);
+void UpdateRemoteInfo(void *PWM_Array);
 int8_t Remote_GetLX(void);
 int8_t Remote_GetLY(void);
 int8_t Remote_GetRX(void);

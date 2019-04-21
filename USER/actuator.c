@@ -1,66 +1,8 @@
 #include "actuator.h"
 
-uint8_t devIDList[ACTR_DEV_NUM] = {2, 50, 11, 30, 3, 4, 1, 7, 78, 6, 5, 8};
-//LF-RB-RF-LB
-float actrAngle[12] = {0.0f, 10.0f, 3.0f, 0.0f, -10.0f, -3.0f, 0.0f, -10.0f, -3.0f, 0.0f, 10.0f, 3.0f};
-
-const struct actuator_limit
-{
-	float Joint0_Max_PosLimit;
-	float Joint0_Min_PosLimit;
-	float Joint1_Max_PosLimit;
-	float Joint1_Min_PosLimit;
-	float Joint2_Max_PosLimit;
-	float Joint2_Min_PosLimit;
-
-	// float Joint0_Max_VelLimit;
-	// float Joint0_Min_VelLimit;
-	// float Joint1_Max_VelLimit;
-	// float Joint1_Min_VelLimit;
-	// float Joint2_Max_VelLimit;
-	// float Joint2_Min_VelLimit;
-
-	// float Joint0_Max_CurrLimit;
-	// float Joint0_Min_CurrLimit;
-	// float Joint1_Max_CurrLimit;
-	// float Joint1_Min_CurrLimit;
-	// float Joint2_Max_CurrLimit;
-	// float Joint2_Min_CurrLimit;
-} ACTUATOR_LIMIT = {2.5f, -2.5f, 15.0f, -15.0f, 7.0f, -7.0f};
-
-int CheckActrTargetPosVal(void)
-{
-	extern float actrAngle[12];
-
-	for (int i = 0; i < 12; i++)
-	{
-		switch (i)
-		{
-		case 0:
-		case 3:
-		case 6:
-		case 9:
-			if (actrAngle[i] <= ACTUATOR_LIMIT.Joint0_Min_PosLimit || actrAngle[i] >= ACTUATOR_LIMIT.Joint0_Max_PosLimit)
-				return 0;
-			break;
-		case 1:
-		case 4:
-		case 7:
-		case 10:
-			if (actrAngle[i] <= ACTUATOR_LIMIT.Joint1_Min_PosLimit || actrAngle[i] >= ACTUATOR_LIMIT.Joint1_Max_PosLimit)
-				return 0;
-			break;
-		case 2:
-		case 5:
-		case 8:
-		case 11:
-			if (actrAngle[i] <= ACTUATOR_LIMIT.Joint2_Min_PosLimit || actrAngle[i] >= ACTUATOR_LIMIT.Joint2_Max_PosLimit)
-				return 0;
-			break;
-		}
-	}
-	return 1;
-}
+uint8_t devIDList[ACTR_DEV_NUM] = {55, 3, 31, 8, 2};
+//M1-M2-T-M3-M4
+float actrAngle[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
 /**
  * º¯Êý¶¨Òå: PrintActrState

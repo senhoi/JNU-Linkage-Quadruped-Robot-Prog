@@ -2,6 +2,33 @@
 
 volatile uint8_t FrameState = 0;
 
+#if 1
+#pragma import(__use_no_semihosting)
+
+struct __FILE
+{
+	int handle;
+};
+
+FILE __stdout;
+
+void _sys_exit(int x)
+{
+	x = x;
+}
+
+int fputc(int ch, FILE *f)
+{
+	while ((USART1->SR & 0X40) == 0)
+		;
+	USART1->DR = (u8)ch;
+	return ch;
+}
+#endif
+
+u8 USART_RX_BUF[USART_REC_LEN];
+u16 USART_RX_STA = 0;
+
 void USART1_Init(u32 bound)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -45,46 +72,6 @@ void USART1_Init(u32 bound)
 	NVIC_Init(&NVIC_InitStructure);
 
 #endif
-}
-
-void USART3_Init(u32 bound)
-{
-	NVIC_InitTypeDef NVIC_InitStructure;
-	GPIO_InitTypeDef GPIO_InitStructure;
-	USART_InitTypeDef USART_InitStructure;
-
-	USART_DeInit(USART3);
-
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11 | GPIO_Pin_10;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_USART3);
-	GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_USART3);
-
-	USART_InitStructure.USART_BaudRate = bound;
-	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
-	USART_InitStructure.USART_StopBits = USART_StopBits_1;
-	USART_InitStructure.USART_Parity = USART_Parity_No;
-	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
-	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
-	USART_Init(USART3, &USART_InitStructure);
-
-	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
-
-	USART_Cmd(USART3, ENABLE);
-
-	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 3;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
 }
 
 void UART4_Init(u32 bound)
@@ -136,92 +123,36 @@ void UART4_Init(u32 bound)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-uint8_t RxStream[48];
 void USART1_IRQHandler(void)
 {
-	//55 AA
-	//AA 55
+	u8 Res;
 
-	static uint8_t RxData;
-
-	static uint8_t Counter = 0, i = 0;
-	if (USART_GetFlagStatus(USART1, USART_IT_RXNE) != RESET)
+	if (USART_GetITStatus(USART1, USART_IT_RXNE) != RESET) //接收中断(接收到的数据必须是0x0d 0x0a结尾)
 	{
-		USART_ClearITPendingBit(USART1, USART_IT_RXNE);
-		RxData = USART_ReceiveData(USART1);
-		//USART_SendData(USART1, RxData);
-		//USART1 -> DR = RxData;
-		switch (Counter)
+		Res = USART_ReceiveData(USART1); //(USART1->DR);	//读取接收到的数据
+
+		if ((USART_RX_STA & 0x8000) == 0) //接收未完成
 		{
-		case 0: //Wait Start Signal[1]
-			if (RxData == 0x55)
-				Counter++;
-			else
-				Counter = 0;
-			break;
-		case 1: //Wait Start Signal[2]
-			if (RxData == 0xAA)
+			if (USART_RX_STA & 0x4000) //接收到了0x0d
 			{
-				i = 0;
-				Counter++;
-				LED0 = 1; //上升沿表示帧起始匹配
+				if (Res != 0x0a)
+					USART_RX_STA = 0; //接收错误,重新开始
+				else
+					USART_RX_STA |= 0x8000; //接收完成了
 			}
-			else if (RxData == 0x55)
-				;
-			else
-				Counter = 0;
-			break;
-		case 2: //Data Recieving
-			RxStream[i] = RxData;
-			i++;
-			if (i >= 48)
+			else //还没收到0X0D
 			{
-				i = 0;
-				Counter++;
+				if (Res == 0x0d)
+					USART_RX_STA |= 0x4000;
+				else
+				{
+					USART_RX_BUF[USART_RX_STA & 0X3FFF] = Res;
+					USART_RX_STA++;
+					if (USART_RX_STA > (USART_REC_LEN - 1))
+						USART_RX_STA = 0; //接收数据错误,重新开始接收
+				}
 			}
-			break;
-		case 3: //Wait End Signal[1]
-			if (RxData == 0xAA)
-				Counter++;
-			else
-				Counter = 0;
-			break;
-		case 4:					//Wait End Signal[2]
-			if (RxData == 0x55) //End Signal[2] Matched
-			{
-				LED0 = 0; //下降沿表示结束帧匹配
-
-				*((volatile uint8_t *)&FrameState) = 48;
-			}
-			Counter = 0;
-			break;
-		default:
-			Counter = 0;
-			break;
 		}
-	}
-
-	/*	发 送 中 断	*/
-	//	if(USART_GetITStatus(USART3, USART_IT_TC))	//Tx Int
-	//	{
-	//		USART_ClearITPendingBit(USART1, USART_IT_TC);
-	//		if(TxIndex < MsgLength)
-	//			USART_SendData(USART1, TxMsg[TxIndex]);
-	//		TxIndex++;
-	//	}*/
-}
-
-void USART3_IRQHandler(void)
-{
-	if (USART_GetFlagStatus(USART3, USART_FLAG_ORE) != RESET)
-	{
-		USART_ReceiveData(USART3);
-		USART_ClearFlag(USART3, USART_FLAG_ORE);
-	}
-	if (USART_GetITStatus(USART3, USART_IT_RXNE) != RESET)
-	{
-		//SubmissiveCtrlTask(USART_ReceiveData(USART3));
-		USART_ClearITPendingBit(USART3, USART_IT_RXNE);
 	}
 }
 
