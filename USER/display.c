@@ -8,6 +8,10 @@ void ShowInfo(void)
 	char sActrState[12];
 	char prev_sActrState[12];
 	char sFootGrounding[4][4] = {{"LM1"}, {"LM2"}, {"RM2"}, {"RM1"}};
+	char prev_sAutoTime[12];
+	char sAutoTime[12];
+	char prev_sStepState[12];
+	char sStepState[12];
 
 	static int shadow_ActivateFlag = -1;
 	static int shadow_AutoManualFlag = -1;
@@ -17,7 +21,13 @@ void ShowInfo(void)
 	extern int ActivateFlag;
 	extern int AutoManualFlag;
 
+	extern int AutoTime_S;
+	extern int AutoTime_MS;
 	extern uint8_t FootGrounding;
+
+	extern uint8_t StepIndex;
+	extern uint8_t StepIndex_Pause;
+	extern uint8_t StepIndex_PauseFlag;
 
 	for (int i = 0; i < ACTR_DEV_NUM; i++)
 	{
@@ -64,21 +74,49 @@ void ShowInfo(void)
 			POINT_COLOR = GREEN;
 			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(1), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "RUN ");
 		}
+		else if (ActivateFlag == ERROR)
+		{
+			POINT_COLOR = RED;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(1), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "ERR-");
+		}
 	}
 
 	if (shadow_AutoManualFlag != AutoManualFlag || shadow_InterfaceIndex != InterfaceIndex)
 	{
-		if (AutoManualFlag == AUTO)
+		if (AutoManualFlag == AUTO_L)
 		{
-			POINT_COLOR = RED;
-			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "AUTO  ");
+			POINT_COLOR = LBBLUE;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "AUTO_L");
+		}
+		else if (AutoManualFlag == AUTO_R)
+		{
+			POINT_COLOR = BRRED;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "AUTO_R");
 		}
 		else if (AutoManualFlag == MANUAL)
 		{
 			POINT_COLOR = GREEN;
 			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "MANUAL");
 		}
+		else
+		{
+			POINT_COLOR = BLACK;
+			LCD_ShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(2), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, "IDLE  ");
+		}
 	}
+
+	POINT_COLOR = BLUE;
+	sprintf(sAutoTime, "T:%7.3f", AutoTime_S + AutoTime_MS / 1000.0f);
+	LCD_FastShowString(INFO_DISP_SET_COL(INFO_DISP_COL_TAB), INFO_DISP_SET_ROW(3), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, (u8 *)prev_sAutoTime, (u8 *)sAutoTime);
+
+	if (StepIndex_PauseFlag == STEP_PAUSED && StepIndex_Pause == StepIndex)
+		sprintf(sStepState, "S:%d PAUSED", StepIndex);
+	else if (StepIndex_PauseFlag == STEP_CONTINUE || StepIndex_Pause != StepIndex)
+		sprintf(sStepState, "S:%d GO    ", StepIndex);
+	else if (StepIndex == 128)
+		sprintf(sStepState, "S:%d DONE  ", StepIndex);
+
+	LCD_FastShowString(INFO_DISP_SET_COL(20), INFO_DISP_SET_ROW(3), INFO_DISP_STA_LABELWIDTH, INFO_DISP_STA_LABELHEIGHT, INFO_DISP_FONTSIZE, LCD_MODE_NOT_OVERLAY, (u8 *)prev_sStepState, (u8 *)sStepState);
 
 	shadow_ActivateFlag = ActivateFlag;
 	shadow_AutoManualFlag = AutoManualFlag;

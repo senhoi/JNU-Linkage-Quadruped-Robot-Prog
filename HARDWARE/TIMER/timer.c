@@ -24,6 +24,10 @@ void TIM3_Init(void)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
+int AutoTime_Flag = 0;
+int AutoTime_S = 0;
+int AutoTime_MS = 0;
+
 void TIM3_IRQHandler(void)
 {
 	static uint16_t t = 0;
@@ -36,6 +40,15 @@ void TIM3_IRQHandler(void)
 		{
 			TASK_SET_FLAG(TASK_FLAG_CONTROL);
 			TASK_SET_FLAG(TASK_FLAG_REPORT_POS);
+			if (AutoTime_Flag)
+			{
+				AutoTime_MS += 10;
+				if (AutoTime_MS == 1000)
+				{
+					AutoTime_MS = 0;
+					AutoTime_S++;
+				}
+			}
 		}
 		if (t % 50 == 0)
 		{

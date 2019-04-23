@@ -42,9 +42,12 @@ typedef enum task_flag
 #define TASK_BEGIN_REGULAR_REPORT (ReportTaskFlag = 1)
 #define TASK_CHECK_REGULAR_REPORT_FLAG (ReportTaskFlag == 1)
 
-#define MANUAL 0
-#define AUTO 1
+#define IDLE 0
+#define MANUAL 1
+#define AUTO_L 2
+#define AUTO_R 3
 
+#define ERROR -1
 #define STOP 0
 #define RUN 1
 
@@ -54,5 +57,6 @@ void ControlTask(void);
 void HandleLowPirorityTask(void);
 void CheckFootGroundingTask(void);
 void HandleDevDataTask(void);
+int CheckActrRunningStateTask(void);
 
 #endif
