@@ -16,7 +16,10 @@
 #include "math.h"
 #include "usr_math.h"
 #include "auto.h"
+<<<<<<< HEAD
 #include "io.h"
+=======
+>>>>>>> 2abb381ba8c01f80c11cc41f95c35d118f505252
 
 extern unsigned int LowPirorityTaskFlag;
 extern int ActrHomingError;

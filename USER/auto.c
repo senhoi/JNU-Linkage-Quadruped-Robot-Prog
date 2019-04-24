@@ -8,6 +8,7 @@ float CtrlVal_Turning;
 
 uint8_t StepIndex = 0;
 uint8_t StepIndex_Pause = 7;
+
 uint8_t StepIndex_PauseFlag = STEP_PAUSED;
 
 void InitAutoData(void)
@@ -49,11 +50,11 @@ void InitAutoData(void)
 	sRightArea[2].end_time = 9.0f;
 	sRightArea[2].forward_val = 60;
 	sRightArea[2].turning_val = 0;
-	
+
 	sRightArea[3].end_time = 9.5f;
 	sRightArea[3].forward_val = 60;
 	sRightArea[3].turning_val = -100;
-	
+
 	sRightArea[4].end_time = 10.5f;
 	sRightArea[4].forward_val = 80;
 	sRightArea[4].turning_val = 0;
@@ -89,7 +90,7 @@ void CalcAutoData(int area)
 		while (current_time > sRightArea[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
 			StepIndex++;
 	}
-	
+
 	if (StepIndex == StepIndex_Pause)
 	{
 		if (StepIndex_PauseFlag == STEP_PAUSED)

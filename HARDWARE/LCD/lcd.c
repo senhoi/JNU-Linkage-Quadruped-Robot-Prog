@@ -887,7 +887,7 @@ void LCD_Init(void)
 		FSMC_Bank1E->BWTR[6] |= 12 << 8;	 //数据保存时间(DATAST)为6ns*13个HCLK=78ns
 	}
 	//printf(" LCD ID:%x\r\n", lcddev.id); //打印LCD ID
-	if (lcddev.id == 0X9341)			 //9341初始化
+	if (lcddev.id == 0X9341) //9341初始化
 	{
 		LCD_WR_REG(0xCF);
 		LCD_WR_DATA(0x00);
@@ -3120,8 +3120,10 @@ void LCD_ShowString(u16 x, u16 y, u16 width, u16 height, u8 size, u8 mode, u8 *p
 void LCD_FastShowString(u16 x, u16 y, u16 width, u16 height, u8 size, u8 mode, u8 *prev_p, u8 *curr_p)
 {
 	u8 x0 = x;
+
 	u8 *prev_p_temp = prev_p;
 	u8 *curr_p_temp = curr_p;
+
 	width += x;
 	height += y;
 
@@ -3142,5 +3144,6 @@ void LCD_FastShowString(u16 x, u16 y, u16 width, u16 height, u8 size, u8 mode, u
 		curr_p++;
 		prev_p++;
 	}
+
 	strcpy((char *)prev_p_temp, (char *)curr_p_temp);
 }

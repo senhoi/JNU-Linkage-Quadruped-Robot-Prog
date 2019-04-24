@@ -18,7 +18,7 @@ void InitTask(void)
 	LCD_Init();
 	IO_Init();
 	TIM3_Init();
-	TIM14_PWM_Init(20000-1,84-1);
+	TIM14_PWM_Init(20000 - 1, 84 - 1);
 
 	CAN1_Init();
 	ActrDevInit();
@@ -309,7 +309,7 @@ void SubKeyTask_MODE(uint8_t KeyVal)
 	switch (KeyVal)
 	{
 	case KEY0_PRES:
-		TIM_SetCompare1(TIM14,500);
+		TIM_SetCompare1(TIM14, 500);
 		break;
 	case KEY1_PRES:
 		switch (ModeCursorIndex)
@@ -364,7 +364,7 @@ void SubKeyTask_MODE(uint8_t KeyVal)
 		}
 		break;
 	case KEY2_PRES:
-		TIM_SetCompare1(TIM14,2500);
+		TIM_SetCompare1(TIM14, 2500);
 		break;
 	case WKUP_PRES:
 		ModeCursorIndex++;
@@ -477,7 +477,7 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 		break;
 
 	case WKUP_PRES:
-		if(RemoteData[5] != 2)
+		if (RemoteData[5] != 2)
 		{
 			if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R)
 			{
@@ -730,20 +730,20 @@ void CheckIOTask(void)
 {
 	static uint8_t io_state;
 	static uint8_t shawdow_io_state;
-	
+
 	io_state = IO;
-	
-	if(shawdow_io_state != io_state && io_state == 1 && (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R))
+
+	if (shawdow_io_state != io_state && io_state == 1 && (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R))
 	{
 		AutoTime_Flag = 1;
 		ActivateFlag = RUN;
 		BEEP_Normal(1);
 		InitAutoData();
 	}
-	
-	if(ActivateFlag == RUN && StepIndex == 128)
-		TIM_SetCompare1(TIM14,500);
-	
+
+	if (ActivateFlag == RUN && StepIndex == 128)
+		TIM_SetCompare1(TIM14, 500);
+
 	shawdow_io_state = io_state;
-		//BEEP_Normal(1);
+	//BEEP_Normal(1);
 }
