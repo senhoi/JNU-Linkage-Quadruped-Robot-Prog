@@ -137,7 +137,7 @@
             <DriverSelection>4100</DriverSelection>
           </Flash1>
           <bUseTDR>1</bUseTDR>
-          <Flash2>Segger\JL2CM3.dll</Flash2>
+          <Flash2>BIN\UL2CM3.DLL</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
@@ -323,11 +323,7 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-<<<<<<< HEAD
             <uC99>1</uC99>
-=======
-            <uC99>0</uC99>
->>>>>>> 2abb381ba8c01f80c11cc41f95c35d118f505252
             <uGnu>0</uGnu>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
@@ -341,11 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-<<<<<<< HEAD
               <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\HARDWARE\LCD;..\FWLIB\inc;..\HARDWARE\BEEP;..\HARDWARE\CAN;..\HARDWARE\INNFOS;..\HARDWARE\KEY;..\HARDWARE\TIMER;..\HARDWARE\SBUS;..\HARDWARE\REMOTE;..\HARDWARE\GYRO;..\HARDWARE\IO</IncludePath>
-=======
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\HARDWARE\LED;..\HARDWARE\LCD;..\FWLIB\inc;..\HARDWARE\BEEP;..\HARDWARE\CAN;..\HARDWARE\INNFOS;..\HARDWARE\KEY;..\HARDWARE\TIMER;..\HARDWARE\SBUS;..\HARDWARE\REMOTE;..\HARDWARE\GYRO</IncludePath>
->>>>>>> 2abb381ba8c01f80c11cc41f95c35d118f505252
             </VariousControls>
           </Cads>
           <Aads>
@@ -484,14 +476,11 @@
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\REMOTE\remote.c</FilePath>
             </File>
-<<<<<<< HEAD
             <File>
               <FileName>io.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\IO\io.c</FilePath>
             </File>
-=======
->>>>>>> 2abb381ba8c01f80c11cc41f95c35d118f505252
           </Files>
         </Group>
         <Group>

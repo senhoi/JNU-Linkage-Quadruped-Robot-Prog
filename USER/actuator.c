@@ -128,8 +128,6 @@ void UpdateActrPhase(void)
 	InvertActrPos2Phase(LM2_INDEX);
 	InvertActrPos2Phase(RM2_INDEX);
 	InvertActrPos2Phase(RM1_INDEX);
-
-	actrRefPhase = actrPhase[LM2_INDEX];
 }
 
 void CountActrRevolution(void)
@@ -142,7 +140,17 @@ void CountActrRevolution(void)
 			actrRevolution[i]++;
 		prev_actrPhase[i] = actrPhase[i];
 	}
-	actrRefRevolution = actrRevolution[LM2_INDEX];
+
+	if (actrPhase[LM2_INDEX] > 2.0f)
+	{
+		actrRefPhase = actrPhase[LM2_INDEX];
+		actrRefRevolution = actrRevolution[LM2_INDEX];
+	}
+	else
+	{
+		actrRefPhase = actrPhase[LM1_INDEX];
+		actrRefRevolution = actrRevolution[LM1_INDEX];
+	}
 }
 
 void ClearActrPhase(void)
@@ -165,14 +173,16 @@ void ClearActrRevolution(void)
 }
 
 PID_Increment_t PID_LM1;
+PID_Increment_t PID_LM2;
 PID_Increment_t PID_RM2;
 PID_Increment_t PID_RM1;
 
 void InitActrPhasePID(void)
 {
-	PID_Increment_Reset(&PID_LM1, 0.45f, 0.0f, 0, 0.01, 1000.0f, 0.1f, 1.0f);
-	PID_Increment_Reset(&PID_RM2, 0.45f, 0.0f, 0, 0.01, 1000.0f, 0.1f, 1.0f);
-	PID_Increment_Reset(&PID_RM1, 0.45f, 0.0f, 0, 0.01, 1000.0f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_LM1, 0.45f, 0.01f, 1.0f, 0.01, 1000.0f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_LM2, 0.45f, 0.01f, 1.0f, 0.01, 1000.0f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_RM2, 0.45f, 0.01f, 1.0f, 0.01, 1000.0f, 0.1f, 1.0f);
+	PID_Increment_Reset(&PID_RM1, 0.45f, 0.01f, 1.0f, 0.01, 1000.0f, 0.1f, 1.0f);
 }
 
 void CalcActrPhasePID(void)
@@ -180,6 +190,10 @@ void CalcActrPhasePID(void)
 	PID_LM1.Ref = actrRefPhase + actrRefRevolution * 4.0f;
 	PID_LM1.Feedback = actrPhase[LM1_INDEX] + actrRevolution[LM1_INDEX] * 4.0f;
 	PID_Increment_Calc(&PID_LM1);
+
+	PID_LM2.Ref = actrRefPhase + actrRefRevolution * 4.0f;
+	PID_LM2.Feedback = actrPhase[LM2_INDEX] + actrRevolution[LM2_INDEX] * 4.0f;
+	PID_Increment_Calc(&PID_LM2);
 
 	PID_RM2.Ref = actrRefPhase + actrRefRevolution * 4.0f;
 	PID_RM2.Feedback = actrPhase[RM2_INDEX] + actrRevolution[RM2_INDEX] * 4.0f;

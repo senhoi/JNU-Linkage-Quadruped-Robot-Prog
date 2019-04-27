@@ -7,6 +7,8 @@
 #define CTRL_SRC_REMOTE 0
 #define CTRL_SRC_AUTO_L 1
 #define CTRL_SRC_AUTO_R 2
+#define CTRL_SRC_RESUME_L 3
+#define CTRL_SRC_RESUME_R 4
 
 #define MAX_STEP_NUM 128
 

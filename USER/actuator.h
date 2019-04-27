@@ -34,6 +34,7 @@ extern int16_t actrRevolution[ACTR_DEV_NUM];
 extern int16_t actrRefRevolution;
 
 extern PID_Increment_t PID_LM1;
+extern PID_Increment_t PID_LM2;
 extern PID_Increment_t PID_RM2;
 extern PID_Increment_t PID_RM1;
 

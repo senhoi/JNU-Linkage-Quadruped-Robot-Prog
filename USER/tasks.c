@@ -39,6 +39,14 @@ void ControlTask(void)
 	case AUTO_R:
 		GetCtrlData(CTRL_SRC_AUTO_R);
 		break;
+	
+	case RESUME_L:
+		GetCtrlData(CTRL_SRC_RESUME_L);
+		break;
+
+	case RESUME_R:
+		GetCtrlData(CTRL_SRC_RESUME_R);
+		break;
 
 	case MANUAL:
 		GetCtrlData(CTRL_SRC_REMOTE);
@@ -54,34 +62,34 @@ void ControlTask(void)
 		{
 			if (actrRefPhase < 2.0f)
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.06f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.06f, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.06f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.06f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI));
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI)) + PID_LM2.Output;
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 			else
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.06f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.06f, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.06f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.06f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI));
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 		}
 		else
 		{
 			if (actrRefPhase < 2.0f)
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.06f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.06f, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.06f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.06f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI));
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI)) + PID_LM2.Output;
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 			else
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.06f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.06f, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.06f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.06f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI));
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 		}
 
@@ -200,6 +208,7 @@ unsigned int LowPirorityTaskFlag = 0;
 //	[31-2]:	IDLE
 
 void CheckIOTask(void);
+void ScanIOTask(void);
 
 /**
  * º¯Êý¶¨Òå: HandleLowPirorityTask
@@ -248,7 +257,8 @@ void HandleLowPirorityTask(void)
 
 	CheckFootGroundingTask();
 	HandleDevDataTask();
-	CheckIOTask();
+	//CheckIOTask();
+	ScanIOTask();
 
 	if (CheckActrRunningStateTask() == 0)
 		ActivateFlag = ERROR;
@@ -430,7 +440,7 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 		BEEP_Alert(1);
 		ActivateFlag = STOP;
 		AutoManualFlag++;
-		if (AutoManualFlag == 4)
+		if (AutoManualFlag == 6)
 			AutoManualFlag = IDLE;
 		break;
 
@@ -479,7 +489,7 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 	case WKUP_PRES:
 		if (RemoteData[5] != 2)
 		{
-			if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R)
+			if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L || AutoManualFlag == RESUME_R)
 			{
 				BEEP_Alert(3);
 				MoveActrPosCursor();
@@ -726,24 +736,43 @@ int CheckActrRunningStateTask(void)
 	return 1;
 }
 
-void CheckIOTask(void)
+void ScanIOTask(void)
 {
-	static uint8_t io_state;
-	static uint8_t shawdow_io_state;
+	static uint8_t shawdow_io_microswitch;
+	static uint16_t beep_times;
 
-	io_state = IO;
-
-	if (shawdow_io_state != io_state && io_state == 1 && (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R))
+	if (IO_SOFT_EMERGE == 1)
 	{
-		AutoTime_Flag = 1;
-		ActivateFlag = RUN;
-		BEEP_Normal(1);
-		InitAutoData();
+		AutoTime_Flag = 0;
+		ActivateFlag = STOP;
+
+		beep_times++;
+		if (beep_times == 1000)
+		{
+			beep_times = 0;
+			BEEP_Error(3);
+		}
 	}
-
-	if (ActivateFlag == RUN && StepIndex == 128)
-		TIM_SetCompare1(TIM14, 500);
-
-	shawdow_io_state = io_state;
-	//BEEP_Normal(1);
+	else
+	{
+		if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L || AutoManualFlag == RESUME_R)
+		{
+			if (IO_MICROSWITCH != shawdow_io_microswitch && IO_MICROSWITCH == 1)
+			{
+				AutoTime_Flag = 1;
+				ActivateFlag = RUN;
+				BEEP_Normal(1);
+				InitAutoData();
+			}
+			if (!IO_ENSURANCE1 && !IO_ENSURANCE2 && ActivateFlag == RUN)
+			{
+				AutoTime_Flag = 0; 
+				ActivateFlag = STOP;
+				BEEP_Error(10);
+			}  
+			if (ActivateFlag == RUN && StepIndex == 128)
+				TIM_SetCompare1(TIM14, 500);
+		}
+	}
+	shawdow_io_microswitch = IO_MICROSWITCH;
 }

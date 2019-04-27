@@ -16,10 +16,7 @@
 #include "math.h"
 #include "usr_math.h"
 #include "auto.h"
-<<<<<<< HEAD
 #include "io.h"
-=======
->>>>>>> 2abb381ba8c01f80c11cc41f95c35d118f505252
 
 extern unsigned int LowPirorityTaskFlag;
 extern int ActrHomingError;
@@ -50,6 +47,8 @@ typedef enum task_flag
 #define MANUAL 1
 #define AUTO_L 2
 #define AUTO_R 3
+#define RESUME_L 4
+#define RESUME_R 5
 
 #define ERROR -1
 #define STOP 0
