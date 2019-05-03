@@ -47,7 +47,7 @@ void InitAutoData(void)
 	sLeftArea[6].forward_val = 75;
 	sLeftArea[6].turning_val = -128;
 
-	sLeftArea[7].end_time = 16.25f;
+	sLeftArea[7].end_time = 16.50f;
 	sLeftArea[7].forward_val = 80;
 	sLeftArea[7].turning_val = -10;
 

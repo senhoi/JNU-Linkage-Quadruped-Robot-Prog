@@ -3623,7 +3623,7 @@
       </Doc>
       <Doc>
         <Name>.\actuator.c</Name>
-        <ColumnNumber>63</ColumnNumber>
+        <ColumnNumber>64</ColumnNumber>
         <TopLine>162</TopLine>
         <CurrentLine>185</CurrentLine>
         <Folding>1</Folding>
@@ -3632,9 +3632,9 @@
       </Doc>
       <Doc>
         <Name>.\auto.c</Name>
-        <ColumnNumber>32</ColumnNumber>
-        <TopLine>5</TopLine>
-        <CurrentLine>23</CurrentLine>
+        <ColumnNumber>31</ColumnNumber>
+        <TopLine>113</TopLine>
+        <CurrentLine>28</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -3686,7 +3686,7 @@
       </Doc>
       <Doc>
         <Name>.\usr_math.c</Name>
-        <ColumnNumber>2</ColumnNumber>
+        <ColumnNumber>4</ColumnNumber>
         <TopLine>9</TopLine>
         <CurrentLine>32</CurrentLine>
         <Folding>1</Folding>
