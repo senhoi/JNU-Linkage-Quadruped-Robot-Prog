@@ -134,9 +134,9 @@ void CountActrRevolution(void)
 {
 	for (int i = 0; i < ACTR_DEV_NUM; i++)
 	{
-		if (prev_actrPhase[i] < 1.0f && actrPhase[i] > 3.0f)
+		if (prev_actrPhase[i] < 1.1f && actrPhase[i] > 2.9f)
 			actrRevolution[i]--;
-		else if (prev_actrPhase[i] > 3.0f && actrPhase[i] < 1.0f)
+		else if (prev_actrPhase[i] > 2.9f && actrPhase[i] < 1.1f)
 			actrRevolution[i]++;
 		prev_actrPhase[i] = actrPhase[i];
 	}

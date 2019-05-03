@@ -47,8 +47,10 @@ typedef enum task_flag
 #define MANUAL 1
 #define AUTO_L 2
 #define AUTO_R 3
-#define RESUME_L 4
-#define RESUME_R 5
+#define RESUME_L1 4
+#define RESUME_R1 5
+#define RESUME_L2 6
+#define RESUME_R2 7
 
 #define ERROR -1
 #define STOP 0

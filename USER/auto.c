@@ -2,14 +2,16 @@
 
 Node_t sLeftArea[MAX_STEP_NUM];
 Node_t sRightArea[MAX_STEP_NUM];
-Node_t sResumeLeftPoint[MAX_STEP_NUM];
-Node_t sResumeRightPoint[MAX_STEP_NUM];
+Node_t sResumeLeftPoint_1[MAX_STEP_NUM];
+Node_t sResumeRightPoint_1[MAX_STEP_NUM];
+Node_t sResumeLeftPoint_2[MAX_STEP_NUM];
+Node_t sResumeRightPoint_2[MAX_STEP_NUM];
 
 float CtrlVal_Forward;
 float CtrlVal_Turning;
 
 uint8_t StepIndex = 0;
-uint8_t StepIndex_Pause = 7;
+uint8_t StepIndex_Pause = 8;
 
 uint8_t StepIndex_PauseFlag = STEP_PAUSED;
 
@@ -17,118 +19,173 @@ void InitAutoData(void)
 {
 	StepIndex = 0;
 
-	sLeftArea[0].end_time = 5.0f;
-	sLeftArea[0].forward_val = 80;
+	sLeftArea[0].end_time = 0.5f;
+	sLeftArea[0].forward_val = 45;
 	sLeftArea[0].turning_val = 0;
 
-	sLeftArea[1].end_time = 7.0f;
-	sLeftArea[1].forward_val = 80;
-	sLeftArea[1].turning_val = 112;
+	sLeftArea[1].end_time = 5.5f;
+	sLeftArea[1].forward_val = 90;
+	sLeftArea[1].turning_val = 0;
 
-	sLeftArea[2].end_time = 9.0f;
-	sLeftArea[2].forward_val = 60;
-	sLeftArea[2].turning_val = 0;
+	sLeftArea[2].end_time = 7.5f;
+	sLeftArea[2].forward_val = 80;
+	sLeftArea[2].turning_val = 118;
 
 	sLeftArea[3].end_time = 9.5f;
 	sLeftArea[3].forward_val = 60;
-	sLeftArea[3].turning_val = 100;
+	sLeftArea[3].turning_val = 0;
 
-	sLeftArea[4].end_time = 10.5f;
-	sLeftArea[4].forward_val = 80;
-	sLeftArea[4].turning_val = 0;
+	sLeftArea[4].end_time = 10.0f;
+	sLeftArea[4].forward_val = 70;
+	sLeftArea[4].turning_val = 90;
 
-	sLeftArea[5].end_time = 12.5f;
-	sLeftArea[5].forward_val = 60;
-	sLeftArea[5].turning_val = -128;
+	sLeftArea[5].end_time = 11.0f;
+	sLeftArea[5].forward_val = 80;
+	sLeftArea[5].turning_val = 0;
 
-	sLeftArea[6].end_time = 15.75f;
-	sLeftArea[6].forward_val = 80;
-	sLeftArea[6].turning_val = 0;
+	sLeftArea[6].end_time = 13.0f;
+	sLeftArea[6].forward_val = 75;
+	sLeftArea[6].turning_val = -128;
 
-	sLeftArea[7].end_time = 20.65f;
-	sLeftArea[7].forward_val = 70;
-	sLeftArea[7].turning_val = 0;
+	sLeftArea[7].end_time = 16.25f;
+	sLeftArea[7].forward_val = 80;
+	sLeftArea[7].turning_val = -10;
 
-	sRightArea[0].end_time = 5.0f;
-	sRightArea[0].forward_val = 80;
+	sLeftArea[8].end_time = 21.60f;
+	sLeftArea[8].forward_val = 72;
+	sLeftArea[8].turning_val = 0;
+
+	sRightArea[0].end_time = 0.5f;
+	sRightArea[0].forward_val = 40;
 	sRightArea[0].turning_val = 0;
 
-	sRightArea[1].end_time = 7.0f;
+	sRightArea[1].end_time = 5.5f;
 	sRightArea[1].forward_val = 80;
-	sRightArea[1].turning_val = -112;
+	sRightArea[1].turning_val = 0;
 
-	sRightArea[2].end_time = 9.0f;
-	sRightArea[2].forward_val = 60;
-	sRightArea[2].turning_val = 0;
+	sRightArea[2].end_time = 7.5f;
+	sRightArea[2].forward_val = 80;
+	sRightArea[2].turning_val = -112;
 
 	sRightArea[3].end_time = 9.5f;
 	sRightArea[3].forward_val = 60;
-	sRightArea[3].turning_val = -100;
+	sRightArea[3].turning_val = 0;
 
 	sRightArea[4].end_time = 10.5f;
-	sRightArea[4].forward_val = 80;
-	sRightArea[4].turning_val = 0;
+	sRightArea[4].forward_val = 60;
+	sRightArea[4].turning_val = -100;
 
-	sRightArea[5].end_time = 12.5f;
-	sRightArea[5].forward_val = 60;
-	sRightArea[5].turning_val = 128;
+	sRightArea[5].end_time = 11.0f;
+	sRightArea[5].forward_val = 80;
+	sRightArea[5].turning_val = 0;
 
-	sRightArea[6].end_time = 15.75f;
-	sRightArea[6].forward_val = 80;
-	sRightArea[6].turning_val = 0;
+	sRightArea[6].end_time = 13.5f;
+	sRightArea[6].forward_val = 60;
+	sRightArea[6].turning_val = 128;
 
-	sRightArea[7].end_time = 20.65f;
-	sRightArea[7].forward_val = 70;
+	sRightArea[7].end_time = 16.5f;
+	sRightArea[7].forward_val = 80;
 	sRightArea[7].turning_val = 0;
 
-	sResumeLeftPoint[0].end_time = 2.5f;
-	sResumeLeftPoint[0].forward_val = 60;
-	sResumeLeftPoint[0].turning_val = 0;
+	sRightArea[8].end_time = 21.10f;
+	sRightArea[8].forward_val = 80;
+	sRightArea[8].turning_val = 0;
 
-	sResumeLeftPoint[1].end_time = 3.0f;
-	sResumeLeftPoint[1].forward_val = 60;
-	sResumeLeftPoint[1].turning_val = 100;
+	sResumeLeftPoint_1[0].end_time = 2.5f;
+	sResumeLeftPoint_1[0].forward_val = 60;
+	sResumeLeftPoint_1[0].turning_val = 0;
 
-	sResumeLeftPoint[2].end_time = 4.0f;
-	sResumeLeftPoint[2].forward_val = 80;
-	sResumeLeftPoint[2].turning_val = 0;
+	sResumeLeftPoint_1[1].end_time = 3.0f;
+	sResumeLeftPoint_1[1].forward_val = 60;
+	sResumeLeftPoint_1[1].turning_val = 100;
 
-	sResumeLeftPoint[3].end_time = 6.0f;
-	sResumeLeftPoint[3].forward_val = 60;
-	sResumeLeftPoint[3].turning_val = -128;
+	sResumeLeftPoint_1[2].end_time = 4.0f;
+	sResumeLeftPoint_1[2].forward_val = 80;
+	sResumeLeftPoint_1[2].turning_val = 0;
 
-	sResumeLeftPoint[4].end_time = 9.25f;
-	sResumeLeftPoint[4].forward_val = 80;
-	sResumeLeftPoint[4].turning_val = 0;
+	sResumeLeftPoint_1[3].end_time = 6.0f;
+	sResumeLeftPoint_1[3].forward_val = 60;
+	sResumeLeftPoint_1[3].turning_val = -128;
 
-	sResumeLeftPoint[5].end_time = 14.15f;
-	sResumeLeftPoint[5].forward_val = 70;
-	sResumeLeftPoint[5].turning_val = 0;
-	
-	sResumeRightPoint[0].end_time = 2.5f;
-	sResumeRightPoint[0].forward_val = 60;
-	sResumeRightPoint[0].turning_val = 0;
+	sResumeLeftPoint_1[4].end_time = 9.5f;
+	sResumeLeftPoint_1[4].forward_val = 80;
+	sResumeLeftPoint_1[4].turning_val = 0;
 
-	sResumeRightPoint[1].end_time = 3.0f;
-	sResumeRightPoint[1].forward_val = 60;
-	sResumeRightPoint[1].turning_val = -100;
+	sResumeLeftPoint_1[5].end_time = 14.6f;
+	sResumeLeftPoint_1[5].forward_val = 70;
+	sResumeLeftPoint_1[5].turning_val = 0;
 
-	sResumeRightPoint[2].end_time = 4.0f;
-	sResumeRightPoint[2].forward_val = 80;
-	sResumeRightPoint[2].turning_val = 0;
+	sResumeRightPoint_1[0].end_time = 2.5f;
+	sResumeRightPoint_1[0].forward_val = 60;
+	sResumeRightPoint_1[0].turning_val = 0;
 
-	sResumeRightPoint[3].end_time = 6.0f;
-	sResumeRightPoint[3].forward_val = 60;
-	sResumeRightPoint[3].turning_val = 128;
+	sResumeRightPoint_1[1].end_time = 3.0f;
+	sResumeRightPoint_1[1].forward_val = 60;
+	sResumeRightPoint_1[1].turning_val = -100;
 
-	sResumeRightPoint[4].end_time = 9.25f;
-	sResumeRightPoint[4].forward_val = 80;
-	sResumeRightPoint[4].turning_val = 0;
+	sResumeRightPoint_1[2].end_time = 4.0f;
+	sResumeRightPoint_1[2].forward_val = 80;
+	sResumeRightPoint_1[2].turning_val = 0;
 
-	sResumeRightPoint[5].end_time = 14.15f;
-	sResumeRightPoint[5].forward_val = 70;
-	sResumeRightPoint[5].turning_val = 0;
-	
+	sResumeRightPoint_1[3].end_time = 6.0f;
+	sResumeRightPoint_1[3].forward_val = 60;
+	sResumeRightPoint_1[3].turning_val = 128;
+
+	sResumeRightPoint_1[4].end_time = 9.75f;
+	sResumeRightPoint_1[4].forward_val = 80;
+	sResumeRightPoint_1[4].turning_val = 0;
+
+	sResumeRightPoint_1[5].end_time = 13.60f;
+	sResumeRightPoint_1[5].forward_val = 70;
+	sResumeRightPoint_1[5].turning_val = 0;
+
+	sResumeLeftPoint_2[0].end_time = 0.0f;
+	sResumeLeftPoint_2[0].forward_val = 60;
+	sResumeLeftPoint_2[0].turning_val = 0;
+
+	sResumeLeftPoint_2[1].end_time = 0.5f;
+	sResumeLeftPoint_2[1].forward_val = 60;
+	sResumeLeftPoint_2[1].turning_val = 90;
+
+	sResumeLeftPoint_2[2].end_time = 1.5f;
+	sResumeLeftPoint_2[2].forward_val = 80;
+	sResumeLeftPoint_2[2].turning_val = 0;
+
+	sResumeLeftPoint_2[3].end_time = 3.5f;
+	sResumeLeftPoint_2[3].forward_val = 60;
+	sResumeLeftPoint_2[3].turning_val = -128;
+
+	sResumeLeftPoint_2[4].end_time = 6.5f;
+	sResumeLeftPoint_2[4].forward_val = 80;
+	sResumeLeftPoint_2[4].turning_val = -10;
+
+	sResumeLeftPoint_2[5].end_time = 11.6f;
+	sResumeLeftPoint_2[5].forward_val = 70;
+	sResumeLeftPoint_2[5].turning_val = 0;
+
+	sResumeRightPoint_2[0].end_time = 0.0f;
+	sResumeRightPoint_2[0].forward_val = 60;
+	sResumeRightPoint_2[0].turning_val = 0;
+
+	sResumeRightPoint_2[1].end_time = 0.5f;
+	sResumeRightPoint_2[1].forward_val = 60;
+	sResumeRightPoint_2[1].turning_val = -100;
+
+	sResumeRightPoint_2[2].end_time = 1.5f;
+	sResumeRightPoint_2[2].forward_val = 80;
+	sResumeRightPoint_2[2].turning_val = 0;
+
+	sResumeRightPoint_2[3].end_time = 3.5f;
+	sResumeRightPoint_2[3].forward_val = 60;
+	sResumeRightPoint_2[3].turning_val = 128;
+
+	sResumeRightPoint_2[4].end_time = 6.5f;
+	sResumeRightPoint_2[4].forward_val = 80;
+	sResumeRightPoint_2[4].turning_val = 0;
+
+	sResumeRightPoint_2[5].end_time = 11.75f;
+	sResumeRightPoint_2[5].forward_val = 70;
+	sResumeRightPoint_2[5].turning_val = 0;
 }
 
 extern int AutoTime_Flag;
@@ -149,14 +206,24 @@ void CalcAutoData(int area)
 		while (current_time > sRightArea[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
 			StepIndex++;
 	}
-	else if (area == CTRL_SRC_RESUME_L)
+	else if (area == CTRL_SRC_RESUME_L1)
 	{
-		while (current_time > sResumeLeftPoint[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
+		while (current_time > sResumeLeftPoint_1[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
 			StepIndex++;
 	}
-	else if (area == CTRL_SRC_RESUME_R)
+	else if (area == CTRL_SRC_RESUME_R1)
 	{
-		while (current_time > sResumeRightPoint[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
+		while (current_time > sResumeRightPoint_1[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
+			StepIndex++;
+	}
+	else if (area == CTRL_SRC_RESUME_L2)
+	{
+		while (current_time > sResumeLeftPoint_2[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
+			StepIndex++;
+	}
+	else if (area == CTRL_SRC_RESUME_R2)
+	{
+		while (current_time > sResumeRightPoint_2[StepIndex].end_time && StepIndex < MAX_STEP_NUM)
 			StepIndex++;
 	}
 
@@ -189,15 +256,25 @@ void CalcAutoData(int area)
 		CtrlVal_Forward = sRightArea[StepIndex].forward_val;
 		CtrlVal_Turning = sRightArea[StepIndex].turning_val;
 	}
-	else if (area == CTRL_SRC_RESUME_L)
+	else if (area == CTRL_SRC_RESUME_L1)
 	{
-		CtrlVal_Forward = sResumeLeftPoint[StepIndex].forward_val;
-		CtrlVal_Turning = sResumeLeftPoint[StepIndex].turning_val;
+		CtrlVal_Forward = sResumeLeftPoint_1[StepIndex].forward_val;
+		CtrlVal_Turning = sResumeLeftPoint_1[StepIndex].turning_val;
 	}
-	else if (area == CTRL_SRC_RESUME_R)
+	else if (area == CTRL_SRC_RESUME_R1)
 	{
-		CtrlVal_Forward = sResumeRightPoint[StepIndex].forward_val;
-		CtrlVal_Turning = sResumeRightPoint[StepIndex].turning_val;
+		CtrlVal_Forward = sResumeRightPoint_1[StepIndex].forward_val;
+		CtrlVal_Turning = sResumeRightPoint_1[StepIndex].turning_val;
+	}
+	else if (area == CTRL_SRC_RESUME_L2)
+	{
+		CtrlVal_Forward = sResumeLeftPoint_2[StepIndex].forward_val;
+		CtrlVal_Turning = sResumeLeftPoint_2[StepIndex].turning_val;
+	}
+	else if (area == CTRL_SRC_RESUME_R2)
+	{
+		CtrlVal_Forward = sResumeRightPoint_2[StepIndex].forward_val;
+		CtrlVal_Turning = sResumeRightPoint_2[StepIndex].turning_val;
 	}
 }
 
@@ -206,23 +283,33 @@ void GetCtrlData(int data_src)
 	switch (data_src)
 	{
 	case CTRL_SRC_AUTO_L:
-		StepIndex_Pause = 7;
+		StepIndex_Pause = 8;
 		CalcAutoData(CTRL_SRC_AUTO_L);
 		break;
 
 	case CTRL_SRC_AUTO_R:
-		StepIndex_Pause = 7;
+		StepIndex_Pause = 8;
 		CalcAutoData(CTRL_SRC_AUTO_R);
 		break;
-	
-	case CTRL_SRC_RESUME_L:
+
+	case CTRL_SRC_RESUME_L1:
 		StepIndex_Pause = 5;
-		CalcAutoData(CTRL_SRC_RESUME_L);
+		CalcAutoData(CTRL_SRC_RESUME_L1);
 		break;
 
-	case CTRL_SRC_RESUME_R:
+	case CTRL_SRC_RESUME_R1:
 		StepIndex_Pause = 5;
-		CalcAutoData(CTRL_SRC_RESUME_R);
+		CalcAutoData(CTRL_SRC_RESUME_R1);
+		break;
+
+	case CTRL_SRC_RESUME_L2:
+		StepIndex_Pause = 5;
+		CalcAutoData(CTRL_SRC_RESUME_L2);
+		break;
+
+	case CTRL_SRC_RESUME_R2:
+		StepIndex_Pause = 5;
+		CalcAutoData(CTRL_SRC_RESUME_R2);
 		break;
 
 	case CTRL_SRC_REMOTE:
@@ -235,30 +322,5 @@ void GetCtrlData(int data_src)
 
 	default:
 		break;
-	}
-}
-
-int16_t actrStopRevolution;
-float actrStopPhase;
-
-uint8_t actrResumePoint;
-
-void ResumeAutoData(void)
-{
-	if (actrRefRevolution + actrStopPhase / 4.0f < 6.0f)
-	{
-		actrResumePoint = 0;
-	}
-	else if (actrRefRevolution + actrStopPhase / 4.0f > 6.0f && actrRefRevolution + actrStopPhase / 4.0f <= 9.0f)
-	{
-		actrResumePoint = 1;
-	}
-	else if (actrRefRevolution + actrStopPhase / 4.0f > 9.0f && actrRefRevolution + actrStopPhase / 4.0f < 12.0f)
-	{
-		actrResumePoint = 2;
-	}
-	else
-	{
-		actrResumePoint = 3;
 	}
 }

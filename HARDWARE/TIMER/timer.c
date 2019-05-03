@@ -107,3 +107,45 @@ void TIM14_PWM_Init(u32 arr, u32 psc)
 
 	TIM_SetCompare1(TIM14, 2500);
 }
+
+
+void TIM7_Init(void)
+{
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM7, ENABLE);
+
+	TIM_TimeBaseInitStructure.TIM_Period = 100;
+	TIM_TimeBaseInitStructure.TIM_Prescaler = 84;
+	TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+
+	TIM_TimeBaseInit(TIM7, &TIM_TimeBaseInitStructure);
+
+	TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM7, ENABLE);
+
+	NVIC_InitStructure.NVIC_IRQChannel = TIM7_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x03;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+}
+
+void TIM7_IRQHandler(void)
+{
+	if (TIM_GetITStatus(TIM7, TIM_IT_Update) == SET)
+	{
+		TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
+		if (TASK_SEARCH_FLAG(TASK_FLAG_CONTROL) == 1)
+		{
+			TASK_RESET_FLAG(TASK_FLAG_CONTROL);
+			ControlTask();
+			LED1 = !LED1;
+		}
+		CheckFootGroundingTask();
+	}
+}
+
+

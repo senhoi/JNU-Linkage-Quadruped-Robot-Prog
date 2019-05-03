@@ -3,7 +3,8 @@
 int ActivateFlag = STOP;
 int AutoManualFlag = IDLE;
 
-const float Spd_Factor = 0.50f;
+float Spd_Factor = 0.52f;
+float Spd_Mu = 0.015f;
 
 void InitTask(void)
 {
@@ -17,10 +18,11 @@ void InitTask(void)
 	KEY_Init();
 	LCD_Init();
 	IO_Init();
+	CAN1_Init();
 	TIM3_Init();
+	TIM7_Init();
 	TIM14_PWM_Init(20000 - 1, 84 - 1);
 
-	CAN1_Init();
 	ActrDevInit();
 
 	ShowModeSelection(-1);
@@ -39,13 +41,21 @@ void ControlTask(void)
 	case AUTO_R:
 		GetCtrlData(CTRL_SRC_AUTO_R);
 		break;
-	
-	case RESUME_L:
-		GetCtrlData(CTRL_SRC_RESUME_L);
+
+	case RESUME_L1:
+		GetCtrlData(CTRL_SRC_RESUME_L1);
 		break;
 
-	case RESUME_R:
-		GetCtrlData(CTRL_SRC_RESUME_R);
+	case RESUME_R1:
+		GetCtrlData(CTRL_SRC_RESUME_R1);
+		break;
+
+	case RESUME_L2:
+		GetCtrlData(CTRL_SRC_RESUME_L2);
+		break;
+
+	case RESUME_R2:
+		GetCtrlData(CTRL_SRC_RESUME_R2);
 		break;
 
 	case MANUAL:
@@ -62,34 +72,34 @@ void ControlTask(void)
 		{
 			if (actrRefPhase < 2.0f)
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI));
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI)) + PID_LM2.Output;
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI));
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_LM2.Output;
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 			else
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_LM1.Output;
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI));
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 		}
 		else
 		{
 			if (actrRefPhase < 2.0f)
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI));
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI)) + PID_LM2.Output;
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, 0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI));
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_LM2.Output;
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 			else
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, 0.03f, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_LM1.Output;
+				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI));
+				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 		}
 
@@ -255,7 +265,7 @@ void HandleLowPirorityTask(void)
 		ControlTask();
 	}
 
-	CheckFootGroundingTask();
+	//CheckFootGroundingTask();
 	HandleDevDataTask();
 	//CheckIOTask();
 	ScanIOTask();
@@ -316,10 +326,12 @@ void KeyTask(void)
  */
 void SubKeyTask_MODE(uint8_t KeyVal)
 {
+	static ActrParaTypedef *pActrParaDev = NULL;
+
 	switch (KeyVal)
 	{
 	case KEY0_PRES:
-		TIM_SetCompare1(TIM14, 500);
+		TIM_SetCompare1(TIM14, 1500);
 		break;
 	case KEY1_PRES:
 		switch (ModeCursorIndex)
@@ -343,6 +355,26 @@ void SubKeyTask_MODE(uint8_t KeyVal)
 			break;
 		case MODECURSOR_SETPMODE:
 			TASK_STOP_REGULAR_REPORT;
+			for (int i = 0; i < ACTR_DEV_NUM; i++)
+			{
+				GetActrPara(ACTR_CMD_GET_CUR_MODE, devIDList[i]);
+				pActrParaDev = FindActrDevByID(devIDList[i]);
+				if (i != 2)
+				{
+					if (pActrParaDev->actrMode != ACTR_MODE_TSHAP_SPD)
+					{
+						SetActrMode(ACTR_MODE_TSHAP_SPD, devIDList[i]);
+					}
+				}
+				else
+				{
+					if (pActrParaDev->actrMode != ACTR_MODE_TSHAP_POS)
+					{
+						SetActrMode(ACTR_MODE_TSHAP_POS, devIDList[i]);
+					}
+				}
+				delay_us(100);
+			}
 			InterfaceIndex = ROBOT_INTERFACE_ACTR_POS;
 			ShowActrPosValTitle();
 			break;
@@ -423,6 +455,7 @@ extern uint8_t StepIndex;
 extern uint8_t StepIndex_Pause;
 extern uint8_t StepIndex_PauseFlag;
 
+uint8_t ActrEmergeResetFlag;
 /**
  * 函数定义: SubKeyTask_ACTR_POS
  * 描   述:	位置显示界面下的按键处理函数
@@ -433,15 +466,89 @@ extern uint8_t StepIndex_PauseFlag;
  */
 void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 {
-	static ActrParaTypedef *pActrParaDev = NULL;
+	//static ActrParaTypedef *pActrParaDev = NULL;
 	switch (KeyVal)
 	{
 	case KEY0_PRES:
-		BEEP_Alert(1);
-		ActivateFlag = STOP;
-		AutoManualFlag++;
-		if (AutoManualFlag == 6)
-			AutoManualFlag = IDLE;
+		if (IO_SOFT_EMERGE == 1)
+		{
+			switch (AutoManualFlag)
+			{
+			case AUTO_R:
+			case AUTO_L:
+				for (int i = 0; i < ACTR_DEV_NUM; i++)
+				{
+					SetActrMode(ACTR_MODE_TSHAP_POS, devIDList[i]);
+					delay_us(100);
+					switch (i)
+					{
+					case LM1_INDEX:
+						SetActrPosition(-16.0f, devIDList[i]);
+						break;
+
+					case LM2_INDEX:
+						SetActrPosition(16.0f, devIDList[i]);
+						break;
+
+					case TM_INDEX:
+						SetActrPosition(0.0f, devIDList[i]);
+						break;
+
+					case RM2_INDEX:
+						SetActrPosition(-16.0f, devIDList[i]);
+						break;
+
+					case RM1_INDEX:
+						SetActrPosition(16.0f, devIDList[i]);
+						break;
+					}
+				}
+				break;
+
+			case RESUME_L1:
+			case RESUME_R1:
+			case RESUME_L2:
+			case RESUME_R2:
+				for (int i = 0; i < ACTR_DEV_NUM; i++)
+				{
+					SetActrMode(ACTR_MODE_TSHAP_POS, devIDList[i]);
+					delay_us(100);
+					switch (i)
+					{
+					case LM1_INDEX:
+						SetActrPosition(0.0f, devIDList[i]);
+						break;
+
+					case LM2_INDEX:
+						SetActrPosition(0.0f, devIDList[i]);
+						break;
+
+					case TM_INDEX:
+						SetActrPosition(0.0f, devIDList[i]);
+						break;
+
+					case RM2_INDEX:
+						SetActrPosition(0.0f, devIDList[i]);
+						break;
+
+					case RM1_INDEX:
+						SetActrPosition(0.0f, devIDList[i]);
+						break;
+					}
+				}
+				break;
+			}
+			ActrEmergeResetFlag = 1;
+		}
+		else
+		{
+			BEEP_Alert(1);
+			ActivateFlag = STOP;
+			AutoManualFlag++;
+			if (AutoManualFlag == 4)
+				AutoManualFlag = IDLE;
+		}
+
 		break;
 
 	case KEY1_PRES:
@@ -463,33 +570,43 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 		break;
 
 	case KEY2_PRES:
-		for (int i = 0; i < ACTR_DEV_NUM; i++)
+		if (IO_SOFT_EMERGE == 1)
 		{
-			GetActrPara(ACTR_CMD_GET_CUR_MODE, devIDList[i]);
-			pActrParaDev = FindActrDevByID(devIDList[i]);
-			if (i != 2)
+			switch (AutoManualFlag)
 			{
-				if (pActrParaDev->actrMode != ACTR_MODE_TSHAP_SPD)
-				{
-					SetActrMode(ACTR_MODE_TSHAP_SPD, devIDList[i]);
-				}
+			case AUTO_L:
+				AutoManualFlag = RESUME_L1;
+				break;
+
+			case RESUME_L1:
+				AutoManualFlag = RESUME_L2;
+				break;
+
+			case RESUME_L2:
+				AutoManualFlag = AUTO_L;
+				break;
+
+			case AUTO_R:
+				AutoManualFlag = RESUME_R1;
+				break;
+
+			case RESUME_R1:
+				AutoManualFlag = RESUME_R2;
+				break;
+
+			case RESUME_R2:
+				AutoManualFlag = AUTO_R;
+				break;
 			}
-			else
-			{
-				if (pActrParaDev->actrMode != ACTR_MODE_TSHAP_POS)
-				{
-					SetActrMode(ACTR_MODE_TSHAP_POS, devIDList[i]);
-				}
-			}
-			BEEP_Normal(1);
 		}
+		BEEP_Alert(1);
 
 		break;
 
 	case WKUP_PRES:
 		if (RemoteData[5] != 2)
 		{
-			if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L || AutoManualFlag == RESUME_R)
+			if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L1 || AutoManualFlag == RESUME_R1 || AutoManualFlag == RESUME_L2 || AutoManualFlag == RESUME_R2)
 			{
 				BEEP_Alert(3);
 				MoveActrPosCursor();
@@ -534,8 +651,32 @@ void SubKeyTask_HOMING_CHECK(uint8_t KeyVal)
 		for (int i = 0; i < ACTR_DEV_NUM; i++)
 		{
 			SetActrMode(ACTR_MODE_TSHAP_POS, devIDList[i]);
-			BEEP_Alert(1);
-			SetActrPosition(0.0f, devIDList[i]);
+			delay_us(100);
+			switch (i)
+			{
+			case LM1_INDEX:
+				SetActrPosition(-16.0f, devIDList[i]);
+				break;
+
+			case LM2_INDEX:
+				SetActrPosition(16.0f, devIDList[i]);
+				break;
+
+			case TM_INDEX:
+				SetActrPosition(0.0f, devIDList[i]);
+				break;
+
+			case RM2_INDEX:
+				SetActrPosition(-16.0f, devIDList[i]);
+				break;
+
+			case RM1_INDEX:
+				SetActrPosition(16.0f, devIDList[i]);
+				break;
+
+			default:
+				break;
+			}
 		}
 		break;
 	case KEY1_PRES:
@@ -554,11 +695,11 @@ void SubKeyTask_HOMING_CHECK(uint8_t KeyVal)
 		switch (id_index)
 		{
 		case LM1_INDEX:
-			SetActrPosition(0.0f, devIDList[id_index]);
+			SetActrPosition(-16.0f, devIDList[id_index]);
 			break;
 
 		case LM2_INDEX:
-			SetActrPosition(0.0f, devIDList[id_index]);
+			SetActrPosition(16.0f, devIDList[id_index]);
 			break;
 
 		case TM_INDEX:
@@ -566,11 +707,11 @@ void SubKeyTask_HOMING_CHECK(uint8_t KeyVal)
 			break;
 
 		case RM2_INDEX:
-			SetActrPosition(0.0f, devIDList[id_index]);
+			SetActrPosition(-16.0f, devIDList[id_index]);
 			break;
 
 		case RM1_INDEX:
-			SetActrPosition(0.0f, devIDList[id_index]);
+			SetActrPosition(16.0f, devIDList[id_index]);
 			break;
 
 		default:
@@ -667,7 +808,7 @@ uint8_t FootGrounding;
  * 入口参数: 
  * 		
  * 出口参数: 
- * 备   注:	通过检测膝关节电流实现落地检测
+ * 备   注:	通过检测关节电流实现落地检测
  */
 void CheckFootGroundingTask(void)
 {
@@ -739,12 +880,95 @@ int CheckActrRunningStateTask(void)
 void ScanIOTask(void)
 {
 	static uint8_t shawdow_io_microswitch;
+	static uint8_t shawdow_io_soft_emerge;
 	static uint16_t beep_times;
+	static ActrParaTypedef *pActrParaDev = NULL;
+
+	if (IO_SPEEDUP1 == 1 && IO_SPEEDUP2 == 1)
+	{
+		Spd_Factor = 1.0f;
+		Spd_Mu = 0.1f;
+	}
+	else if (IO_SPEEDUP1 == 1 && IO_SPEEDUP2 == 0)
+	{
+		Spd_Factor = 0.75f;
+		Spd_Mu = 0.06f;
+	}
+	else if (IO_SPEEDUP1 == 0 && IO_SPEEDUP2 == 1)
+	{
+		Spd_Factor = 0.62f;
+		Spd_Mu = 0.04f;
+	}
+	else if (IO_SPEEDUP1 == 0 && IO_SPEEDUP2 == 0)
+	{
+		Spd_Factor = 0.52f;
+		Spd_Mu = 0.015f;
+	}
 
 	if (IO_SOFT_EMERGE == 1)
 	{
 		AutoTime_Flag = 0;
 		ActivateFlag = STOP;
+		InitAutoData();
+
+		if (shawdow_io_soft_emerge == 0)
+		{
+
+			if (AutoManualFlag == AUTO_L)
+			{
+				if (actrRefPhase / 4.0f + actrRefRevolution > 8.0f && actrRefPhase / 4.0f + actrRefRevolution < 10.0f)
+					AutoManualFlag = RESUME_L1;
+				else if (actrRefPhase / 4.0f + actrRefRevolution >= 10.0f)
+					AutoManualFlag = RESUME_L2;
+				else
+					AutoManualFlag = AUTO_L;
+			}
+			else if (AutoManualFlag == AUTO_R)
+			{
+				if (actrRefPhase / 4.0f + actrRefRevolution > 8.0f && actrRefPhase / 4.0f + actrRefRevolution < 10.0f)
+					AutoManualFlag = RESUME_R1;
+				else if (actrRefPhase / 4.0f + actrRefRevolution >= 10.0f)
+					AutoManualFlag = RESUME_R2;
+				else
+					AutoManualFlag = AUTO_R;
+			}
+			else if (AutoManualFlag == RESUME_L1)
+			{
+				if (actrRefPhase / 4.0f + actrRefRevolution > 1.5f && actrRefPhase / 4.0f + actrRefRevolution < 3.0f)
+					AutoManualFlag = RESUME_L1;
+				else if (actrRefPhase / 4.0f + actrRefRevolution >= 3.0f)
+					AutoManualFlag = RESUME_L2;
+				else
+					AutoManualFlag = AUTO_L;
+			}
+			else if (AutoManualFlag == RESUME_L2)
+			{
+				if (actrRefPhase / 4.0f + actrRefRevolution > 0.0f && actrRefPhase / 4.0f + actrRefRevolution < 1.0f)
+					AutoManualFlag = RESUME_L1;
+				else if (actrRefPhase / 4.0f + actrRefRevolution >= 1.0f)
+					AutoManualFlag = RESUME_L2;
+				else
+					AutoManualFlag = AUTO_L;
+			}
+			else if (AutoManualFlag == RESUME_R1)
+			{
+				if (actrRefPhase / 4.0f + actrRefRevolution > 1.5f && actrRefPhase / 4.0f + actrRefRevolution < 3.0f)
+					AutoManualFlag = RESUME_R1;
+				else if (actrRefPhase / 4.0f + actrRefRevolution >= 3.0f)
+					AutoManualFlag = RESUME_R2;
+				else
+					AutoManualFlag = AUTO_R;
+			}
+			else if (AutoManualFlag == RESUME_R2)
+			{
+				if (actrRefPhase / 4.0f + actrRefRevolution > 0.0f && actrRefPhase / 4.0f + actrRefRevolution < 1.0f)
+					AutoManualFlag = RESUME_R1;
+				else if (actrRefPhase / 4.0f + actrRefRevolution >= 1.0f)
+					AutoManualFlag = RESUME_R2;
+				else
+					AutoManualFlag = AUTO_R;
+			}
+		}
 
 		beep_times++;
 		if (beep_times == 1000)
@@ -755,24 +979,69 @@ void ScanIOTask(void)
 	}
 	else
 	{
-		if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L || AutoManualFlag == RESUME_R)
+		if (shawdow_io_soft_emerge == 1 && ActrEmergeResetFlag == 1)
+		{
+			ActrEmergeResetFlag = 0;
+
+			ClearActrPhase();
+			ClearActrRevolution();
+
+			for (int i = 0; i < ACTR_DEV_NUM; i++)
+			{
+				GetActrPara(ACTR_CMD_GET_CUR_MODE, devIDList[i]);
+				pActrParaDev = FindActrDevByID(devIDList[i]);
+				if (i != 2)
+				{
+					if (pActrParaDev->actrMode != ACTR_MODE_TSHAP_SPD)
+					{
+						SetActrMode(ACTR_MODE_TSHAP_SPD, devIDList[i]);
+					}
+				}
+				else
+				{
+					if (pActrParaDev->actrMode != ACTR_MODE_TSHAP_POS)
+					{
+						SetActrMode(ACTR_MODE_TSHAP_POS, devIDList[i]);
+					}
+				}
+				delay_us(100);
+			}
+			if (RemoteData[5] != 2)
+			{
+				if (AutoManualFlag == RESUME_L1 || AutoManualFlag == RESUME_R1 || AutoManualFlag == RESUME_L2 || AutoManualFlag == RESUME_R2)
+				{
+					BEEP_Alert(1);
+					AutoTime_Flag = 1;
+					ActivateFlag = RUN;
+				}
+				else
+				{
+					ActivateFlag = RUN;
+				}
+			}
+			else
+				BEEP_Normal(1);
+		}
+
+		if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L1 || AutoManualFlag == RESUME_R1 || AutoManualFlag == RESUME_L2 || AutoManualFlag == RESUME_R2)
 		{
 			if (IO_MICROSWITCH != shawdow_io_microswitch && IO_MICROSWITCH == 1)
 			{
 				AutoTime_Flag = 1;
 				ActivateFlag = RUN;
-				BEEP_Normal(1);
+				//BEEP_Normal(1);
 				InitAutoData();
 			}
 			if (!IO_ENSURANCE1 && !IO_ENSURANCE2 && ActivateFlag == RUN)
 			{
-				AutoTime_Flag = 0; 
+				AutoTime_Flag = 0;
 				ActivateFlag = STOP;
-				BEEP_Error(10);
-			}  
+				//BEEP_Error(10);
+			}
 			if (ActivateFlag == RUN && StepIndex == 128)
-				TIM_SetCompare1(TIM14, 500);
+				TIM_SetCompare1(TIM14, 1500);
 		}
 	}
 	shawdow_io_microswitch = IO_MICROSWITCH;
+	shawdow_io_soft_emerge = IO_SOFT_EMERGE;
 }

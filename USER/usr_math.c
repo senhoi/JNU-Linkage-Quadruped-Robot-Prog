@@ -17,17 +17,25 @@ void absLimit(float *num, float Limit)
 	}
 }
 
+const float ACC_TIME = 0.2f;
+const float CUT_OFF_VEL = 0.2f;
 float normpdf_revised(float x, float mu, float sigma)
 {
 	float temp = 1.0f / (sigma * sqrt(2 * PI)) * exp(-(x - mu) * (x - mu) / (2 * sigma * sigma));
+
 	if (mu < 0)
 	{
 		if (x < mu)
-			return 1.0f;
+		{
+			if (x + 1 < ACC_TIME)
+				return (1.0f - CUT_OFF_VEL) / ACC_TIME * (x + 1) + CUT_OFF_VEL;
+			else
+				return 1.0f;
+		}
 		else
 		{
-			if (temp < 0.2f)
-				return 0.2f;
+			if (temp < CUT_OFF_VEL)
+				return CUT_OFF_VEL;
 			else
 				return temp;
 		}
@@ -38,8 +46,8 @@ float normpdf_revised(float x, float mu, float sigma)
 			return 1.0f;
 		else
 		{
-			if (temp < 0.2f)
-				return 0.2f;
+			if (temp < CUT_OFF_VEL)
+				return CUT_OFF_VEL;
 			else
 				return temp;
 		}
