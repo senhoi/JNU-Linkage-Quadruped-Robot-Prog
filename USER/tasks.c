@@ -886,23 +886,23 @@ void ScanIOTask(void)
 
 	if (IO_SPEEDUP1 == 1 && IO_SPEEDUP2 == 1)
 	{
-		Spd_Factor = 1.0f;
-		Spd_Mu = 0.1f;
+		Spd_Factor = 0.82f;
+		Spd_Mu = 0.08f;
 	}
 	else if (IO_SPEEDUP1 == 1 && IO_SPEEDUP2 == 0)
 	{
-		Spd_Factor = 0.75f;
-		Spd_Mu = 0.06f;
+		Spd_Factor = 0.76f;
+		Spd_Mu = 0.060f;
 	}
 	else if (IO_SPEEDUP1 == 0 && IO_SPEEDUP2 == 1)
 	{
-		Spd_Factor = 0.62f;
-		Spd_Mu = 0.04f;
+		Spd_Factor = 0.68f;
+		Spd_Mu = 0.042f;
 	}
 	else if (IO_SPEEDUP1 == 0 && IO_SPEEDUP2 == 0)
 	{
-		Spd_Factor = 0.52f;
-		Spd_Mu = 0.015f;
+		Spd_Factor = 0.60f;
+		Spd_Mu = 0.03f;
 	}
 
 	if (IO_SOFT_EMERGE == 1)
