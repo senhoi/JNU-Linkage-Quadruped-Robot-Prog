@@ -94,20 +94,49 @@ void PrintActrState(ActrReportDataTypedef actrReportDataType, uint32_t actrID)
 	}
 }
 
+float phase_expand_ratio = 3.0f / 2;
+
 void InvertActrPos2Phase(int actr_index)
 {
 	static ActrParaTypedef *pActrParaDev = NULL;
 
 	pActrParaDev = FindActrDevByID(devIDList[actr_index]);
 
+	float k1 = 2.0f / (phase_expand_ratio * 32);
+	float k2 = 2.0f / ((2 - phase_expand_ratio) * 32);
+	float b1 = 4.0f - (phase_expand_ratio - 1) * 16 * k1;
+	float b2 = -(phase_expand_ratio - 1) * 16 * k2;
+	float pos_revised;
+
 	if (pActrParaDev->actrPostion <= -64.0f)
-		actrPhase[actr_index] = (pActrParaDev->actrPostion + 128.0f) / 16.0f;
+		pos_revised = pActrParaDev->actrPostion + 128.0f;
 	else if (pActrParaDev->actrPostion <= 0.0f)
-		actrPhase[actr_index] = (pActrParaDev->actrPostion + 64.0f) / 16.0f;
+		pos_revised = pActrParaDev->actrPostion + 64.0f;
 	else if (pActrParaDev->actrPostion <= 64.0f)
-		actrPhase[actr_index] = (pActrParaDev->actrPostion + 0.0f) / 16.0f;
+		pos_revised = pActrParaDev->actrPostion + 0.0f;
 	else if (pActrParaDev->actrPostion <= 128.0f)
-		actrPhase[actr_index] = (pActrParaDev->actrPostion - 64.0f) / 16.0f;
+		pos_revised = pActrParaDev->actrPostion - 64.0f;
+
+	switch (actr_index)
+	{
+	case RM1_INDEX:
+	case RM2_INDEX:
+
+		pos_revised += 32.0f;
+		if (pos_revised > 64)
+			pos_revised -= 64;
+		break;
+
+	default:
+		break;
+	}
+
+	if (pos_revised < (phase_expand_ratio - 1) * 16)
+		actrPhase[actr_index] = pos_revised * k1 + b1;
+	else if (pos_revised < (phase_expand_ratio - 1) * 16 + 2 / k2)
+		actrPhase[actr_index] = pos_revised * k2 + b2;
+	else
+		actrPhase[actr_index] = (pos_revised - 64) * k1 + b1;
 
 	switch (actr_index)
 	{
@@ -115,6 +144,20 @@ void InvertActrPos2Phase(int actr_index)
 	case RM2_INDEX:
 
 		actrPhase[actr_index] = 4 - actrPhase[actr_index];
+		break;
+
+	default:
+		break;
+	}
+
+	switch (actr_index)
+	{
+	case RM1_INDEX:
+	case RM2_INDEX:
+		if (actrPhase[actr_index] > 2)
+			actrPhase[actr_index] -= 2;
+		else
+			actrPhase[actr_index] += 2;
 		break;
 
 	default:
@@ -141,15 +184,26 @@ void CountActrRevolution(void)
 		prev_actrPhase[i] = actrPhase[i];
 	}
 
-	if (actrPhase[LM2_INDEX] > 2.0f)
+	if (fabs(actrPhase[LM1_INDEX] - actrPhase[LM2_INDEX]) > 0.1)
 	{
-		actrRefPhase = actrPhase[LM2_INDEX];
-		actrRefRevolution = actrRevolution[LM2_INDEX];
+		actrRefPhase = fmodf((actrPhase[LM1_INDEX] + 4 * actrRevolution[LM1_INDEX] + actrPhase[LM2_INDEX] + 4 * actrRevolution[LM2_INDEX]) / 2, 4.0f);
+		if (actrRefPhase < 1.0f)
+			actrRefRevolution = (actrRevolution[LM1_INDEX] > actrRevolution[LM2_INDEX]) ? actrRevolution[LM1_INDEX] : actrRevolution[LM2_INDEX];
+		else if (actrRefPhase > 3.0f)
+			actrRefRevolution = (actrRevolution[LM1_INDEX] > actrRevolution[LM2_INDEX]) ? actrRevolution[LM2_INDEX] : actrRevolution[LM1_INDEX];
 	}
 	else
 	{
-		actrRefPhase = actrPhase[LM1_INDEX];
-		actrRefRevolution = actrRevolution[LM1_INDEX];
+		if (actrPhase[LM2_INDEX] > 2.0f)
+		{
+			actrRefPhase = actrPhase[LM2_INDEX];
+			actrRefRevolution = actrRevolution[LM2_INDEX];
+		}
+		else
+		{
+			actrRefPhase = actrPhase[LM1_INDEX];
+			actrRefRevolution = actrRevolution[LM1_INDEX];
+		}
 	}
 }
 

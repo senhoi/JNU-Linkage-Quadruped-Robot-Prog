@@ -66,22 +66,24 @@ void ControlTask(void)
 	UpdateActrPhase();
 	CountActrRevolution();
 
+	extern float phase_expand_ratio;
+
 	if (ActivateFlag == RUN)
 	{
 		if (CtrlVal_Forward > 0.0f)
 		{
 			if (actrRefPhase < 2.0f)
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI));
+				actrSpd[LM1_INDEX] = phase_expand_ratio * (-Spd_Factor) * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_LM1.Output;
 				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_LM2.Output;
 				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[RM1_INDEX] = phase_expand_ratio * Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 			else
 			{
 				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[LM2_INDEX] = phase_expand_ratio * Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_LM2.Output;
+				actrSpd[RM2_INDEX] = phase_expand_ratio * (-Spd_Factor) * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
 				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, -Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 		}
@@ -89,16 +91,16 @@ void ControlTask(void)
 		{
 			if (actrRefPhase < 2.0f)
 			{
-				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI));
+				actrSpd[LM1_INDEX] = phase_expand_ratio * (-Spd_Factor) * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_LM1.Output;
 				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_LM2.Output;
 				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
-				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
+				actrSpd[RM1_INDEX] = phase_expand_ratio * Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 1.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 			else
 			{
 				actrSpd[LM1_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_LM1.Output;
-				actrSpd[LM2_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI));
-				actrSpd[RM2_INDEX] = -Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
+				actrSpd[LM2_INDEX] = phase_expand_ratio * Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_LM2.Output;
+				actrSpd[RM2_INDEX] = phase_expand_ratio * (-Spd_Factor) * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) - PID_RM2.Output;
 				actrSpd[RM1_INDEX] = Spd_Factor * CtrlVal_Forward / 128.0f * normpdf_revised(actrRefPhase - 3.0f, Spd_Mu, 1 / sqrt(2 * PI)) + PID_RM1.Output;
 			}
 		}
