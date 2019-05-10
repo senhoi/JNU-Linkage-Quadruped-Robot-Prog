@@ -26,6 +26,7 @@ typedef struct Node_t
 
 extern float CtrlVal_Forward;
 extern float CtrlVal_Turning;
+extern float LiftPhaseThreshold;
 
 void InitAutoData(void);
 void GetCtrlData(int data_src);

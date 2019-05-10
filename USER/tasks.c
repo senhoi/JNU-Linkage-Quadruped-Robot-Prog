@@ -608,7 +608,7 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 		{
 			if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L1 || AutoManualFlag == RESUME_R1 || AutoManualFlag == RESUME_L2 || AutoManualFlag == RESUME_R2)
 			{
-				BEEP_Alert(3);
+				BEEP_Alert(1);
 				MoveActrPosCursor();
 				AutoTime_Flag = 1;
 				ActivateFlag = RUN;
@@ -1038,7 +1038,7 @@ void ScanIOTask(void)
 				ActivateFlag = STOP;
 				//BEEP_Error(10);
 			}
-			if (ActivateFlag == RUN && StepIndex == 128)
+			if (ActivateFlag == RUN && actrRefPhase / 4.0f + actrRefRevolution > LiftPhaseThreshold)
 				TIM_SetCompare1(TIM14, 1500);
 		}
 	}

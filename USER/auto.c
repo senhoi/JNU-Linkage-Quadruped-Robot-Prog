@@ -15,6 +15,8 @@ uint8_t StepIndex_Pause = 8;
 
 uint8_t StepIndex_PauseFlag = STEP_PAUSED;
 
+float LiftPhaseThreshold = 22.50f;
+
 void InitAutoData(void)
 {
 	StepIndex = 0;
@@ -65,7 +67,7 @@ void InitAutoData(void)
 
 	sLeftArea[2].end_time = 7.5f;
 	sLeftArea[2].forward_val = 80;
-	sLeftArea[2].turning_val = 112;
+	sLeftArea[2].turning_val = 115;
 
 	sLeftArea[3].end_time = 9.5f;
 	sLeftArea[3].forward_val = 65;
@@ -87,7 +89,7 @@ void InitAutoData(void)
 	sLeftArea[7].forward_val = 80;
 	sLeftArea[7].turning_val = 0;
 
-	sLeftArea[8].end_time = 22.10f;
+	sLeftArea[8].end_time = 22.60f;
 	sLeftArea[8].forward_val = 75;
 	sLeftArea[8].turning_val = 0;
 
@@ -123,7 +125,7 @@ void InitAutoData(void)
 	sRightArea[7].forward_val = 80;
 	sRightArea[7].turning_val = 0;
 
-	sRightArea[8].end_time = 22.10f;
+	sRightArea[8].end_time = 22.60f;
 	sRightArea[8].forward_val = 75;
 	sRightArea[8].turning_val = 0;
 
@@ -147,7 +149,7 @@ void InitAutoData(void)
 	sResumeLeftPoint_1[4].forward_val = 80;
 	sResumeLeftPoint_1[4].turning_val = 0;
 
-	sResumeLeftPoint_1[5].end_time = 15.1f;
+	sResumeLeftPoint_1[5].end_time = 15.6f;
 	sResumeLeftPoint_1[5].forward_val = 75;
 	sResumeLeftPoint_1[5].turning_val = 0;
 
@@ -171,7 +173,7 @@ void InitAutoData(void)
 	sResumeRightPoint_1[4].forward_val = 80;
 	sResumeRightPoint_1[4].turning_val = 0;
 
-	sResumeRightPoint_1[5].end_time = 15.1f;
+	sResumeRightPoint_1[5].end_time = 15.6f;
 	sResumeRightPoint_1[5].forward_val = 75;
 	sResumeRightPoint_1[5].turning_val = 0;
 
@@ -195,7 +197,7 @@ void InitAutoData(void)
 	sResumeLeftPoint_2[4].forward_val = 80;
 	sResumeLeftPoint_2[4].turning_val = 0;
 
-	sResumeLeftPoint_2[5].end_time = 12.1f;
+	sResumeLeftPoint_2[5].end_time = 12.6f;
 	sResumeLeftPoint_2[5].forward_val = 75;
 	sResumeLeftPoint_2[5].turning_val = 0;
 
@@ -219,7 +221,7 @@ void InitAutoData(void)
 	sResumeRightPoint_2[4].forward_val = 80;
 	sResumeRightPoint_2[4].turning_val = 0;
 
-	sResumeRightPoint_2[5].end_time = 12.1f;
+	sResumeRightPoint_2[5].end_time = 12.6f;
 	sResumeRightPoint_2[5].forward_val = 75;
 	sResumeRightPoint_2[5].turning_val = 0;
 }
@@ -320,31 +322,37 @@ void GetCtrlData(int data_src)
 	{
 	case CTRL_SRC_AUTO_L:
 		StepIndex_Pause = 8;
+		LiftPhaseThreshold = 22.50f;
 		CalcAutoData(CTRL_SRC_AUTO_L);
 		break;
 
 	case CTRL_SRC_AUTO_R:
 		StepIndex_Pause = 8;
+		LiftPhaseThreshold = 22.50f;
 		CalcAutoData(CTRL_SRC_AUTO_R);
 		break;
 
 	case CTRL_SRC_RESUME_L1:
 		StepIndex_Pause = 5;
+		LiftPhaseThreshold = 15.3f;
 		CalcAutoData(CTRL_SRC_RESUME_L1);
 		break;
 
 	case CTRL_SRC_RESUME_R1:
 		StepIndex_Pause = 5;
+		LiftPhaseThreshold = 15.3f;
 		CalcAutoData(CTRL_SRC_RESUME_R1);
 		break;
 
 	case CTRL_SRC_RESUME_L2:
 		StepIndex_Pause = 5;
+		LiftPhaseThreshold = 12.3f;
 		CalcAutoData(CTRL_SRC_RESUME_L2);
 		break;
 
 	case CTRL_SRC_RESUME_R2:
 		StepIndex_Pause = 5;
+		LiftPhaseThreshold = 12.3f;
 		CalcAutoData(CTRL_SRC_RESUME_R2);
 		break;
 
