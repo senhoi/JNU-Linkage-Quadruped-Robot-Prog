@@ -17,8 +17,8 @@ void absLimit(float *num, float Limit)
 	}
 }
 
-const float ACC_TIME = 0.2f;
-const float CUT_OFF_VEL = 0.2f;
+const float ACC_TIME = 0.1f;
+const float CUT_OFF_VEL = 0.4f;
 float normpdf_revised(float x, float mu, float sigma)
 {
 	float temp = 1.0f / (sigma * sqrt(2 * PI)) * exp(-(x - mu) * (x - mu) / (2 * sigma * sigma));

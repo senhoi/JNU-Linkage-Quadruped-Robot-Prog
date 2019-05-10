@@ -19,13 +19,15 @@
 
 typedef struct Node_t
 {
-	float end_time;	//本段运动停止时间（绝对）
-	float forward_val; //0~128
-	float turning_val; //转动速度，为0时为直线运动 -128~128
+	float end_time;			  //本段运动停止时间（绝对）
+	float forward_val;		  //0~128
+	float turning_val;		  //转动速度，为0时为直线运动 -128~128
+	float phase_expand_ratio; //摆动相相位膨胀率，1.0~2.0(1.4以下为宜)
 } Node_t;
 
 extern float CtrlVal_Forward;
 extern float CtrlVal_Turning;
+extern float CtrlVal_ExpandRatio;
 
 void InitAutoData(void);
 void GetCtrlData(int data_src);

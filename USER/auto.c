@@ -9,6 +9,7 @@ Node_t sResumeRightPoint_2[MAX_STEP_NUM];
 
 float CtrlVal_Forward;
 float CtrlVal_Turning;
+float CtrlVal_ExpandRatio = 1.3;
 
 uint8_t StepIndex = 0;
 uint8_t StepIndex_Pause = 8;
@@ -58,26 +59,32 @@ void InitAutoData(void)
 	sLeftArea[0].end_time = 0.5f;
 	sLeftArea[0].forward_val = 60;
 	sLeftArea[0].turning_val = 0;
+	sLeftArea[0].phase_expand_ratio = 1.3f;
 
 	sLeftArea[1].end_time = 5.5f;
 	sLeftArea[1].forward_val = 80;
 	sLeftArea[1].turning_val = 0;
+	sLeftArea[1].phase_expand_ratio = 1.3f;
 
 	sLeftArea[2].end_time = 7.5f;
 	sLeftArea[2].forward_val = 80;
 	sLeftArea[2].turning_val = 112;
+	sLeftArea[2].phase_expand_ratio = 1.3f;
 
 	sLeftArea[3].end_time = 9.5f;
 	sLeftArea[3].forward_val = 65;
 	sLeftArea[3].turning_val = 0;
+	sLeftArea[3].phase_expand_ratio = 1.0f;
 
 	sLeftArea[4].end_time = 10.5f;
 	sLeftArea[4].forward_val = 80;
 	sLeftArea[4].turning_val = 100;
+	sLeftArea[4].phase_expand_ratio = 1.3f;
 
 	sLeftArea[5].end_time = 11.0f;
 	sLeftArea[5].forward_val = 80;
 	sLeftArea[5].turning_val = 0;
+	sLeftArea[5].phase_expand_ratio = 1.3f;
 
 	sLeftArea[6].end_time = 13.5f;
 	sLeftArea[6].forward_val = 80;
@@ -286,6 +293,9 @@ void CalcAutoData(int area)
 	{
 		CtrlVal_Forward = sLeftArea[StepIndex].forward_val;
 		CtrlVal_Turning = sLeftArea[StepIndex].turning_val;
+		if (fabs(actrRefPhase - 1) < 0.2 || fabs(actrRefPhase - 3) < 0.2)
+			if (sLeftArea[StepIndex].phase_expand_ratio > 0.9999f && sLeftArea[StepIndex].phase_expand_ratio < 2.0f)
+				CtrlVal_ExpandRatio = sLeftArea[StepIndex].phase_expand_ratio;
 	}
 	else if (area == CTRL_SRC_AUTO_R)
 	{

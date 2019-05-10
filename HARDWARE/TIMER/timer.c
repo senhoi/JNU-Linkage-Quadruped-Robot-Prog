@@ -36,13 +36,13 @@ void TIM3_IRQHandler(void)
 	{
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 		t++;
-		if (t % 10 == 0)
+		if (t % 5 == 0)
 		{
 			TASK_SET_FLAG(TASK_FLAG_CONTROL);
 			TASK_SET_FLAG(TASK_FLAG_REPORT_POS);
 			if (AutoTime_Flag)
 			{
-				AutoTime_MS += 10;
+				AutoTime_MS += 5;
 				if (AutoTime_MS == 1000)
 				{
 					AutoTime_MS = 0;
@@ -108,7 +108,6 @@ void TIM14_PWM_Init(u32 arr, u32 psc)
 	TIM_SetCompare1(TIM14, 2500);
 }
 
-
 void TIM7_Init(void)
 {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure;
@@ -147,5 +146,3 @@ void TIM7_IRQHandler(void)
 		CheckFootGroundingTask();
 	}
 }
-
-

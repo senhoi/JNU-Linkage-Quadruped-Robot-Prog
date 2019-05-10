@@ -42,6 +42,7 @@ int CheckActrTargetPosVal(void);
 void PrintActrState(ActrReportDataTypedef actrReportDataType, uint32_t actrID);
 void UpdateActrPhase(void);
 void CountActrRevolution(void);
+void CalcRefPhase(float spd);
 
 void ClearActrPhase(void);
 void ClearActrRevolution(void);
