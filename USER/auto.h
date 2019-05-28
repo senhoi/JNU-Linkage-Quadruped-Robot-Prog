@@ -11,6 +11,7 @@
 #define CTRL_SRC_RESUME_R1 4
 #define CTRL_SRC_RESUME_L2 5
 #define CTRL_SRC_RESUME_R2 6
+#define CTRL_SRC_SLOPE 7
 
 #define MAX_STEP_NUM 128
 

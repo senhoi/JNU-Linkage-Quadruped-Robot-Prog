@@ -1,6 +1,6 @@
 #include "actuator.h"
 
-uint8_t devIDList[ACTR_DEV_NUM] = {31, 3, 10, 8, 2};
+uint8_t devIDList[ACTR_DEV_NUM] = {1, 3, 10, 4, 2};
 //LM1-LM2-TM-RM2-RM1
 float actrSpd[ACTR_DEV_NUM] = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 

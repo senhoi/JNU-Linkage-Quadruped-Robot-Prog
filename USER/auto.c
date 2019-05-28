@@ -21,42 +21,6 @@ void InitAutoData(void)
 {
 	StepIndex = 0;
 
-	/*sLeftArea[0].end_time = 0.5f;
-	sLeftArea[0].forward_val = 50;
-	sLeftArea[0].turning_val = 0;
-
-	sLeftArea[1].end_time = 5.5f;
-	sLeftArea[1].forward_val = 90;
-	sLeftArea[1].turning_val = 0;
-
-	sLeftArea[2].end_time = 7.5f;
-	sLeftArea[2].forward_val = 80;
-	sLeftArea[2].turning_val = 118;
-
-	sLeftArea[3].end_time = 9.5f;
-	sLeftArea[3].forward_val = 60;
-	sLeftArea[3].turning_val = 0;
-
-	sLeftArea[4].end_time = 10.0f;
-	sLeftArea[4].forward_val = 70;
-	sLeftArea[4].turning_val = 90;
-
-	sLeftArea[5].end_time = 11.0f;
-	sLeftArea[5].forward_val = 80;
-	sLeftArea[5].turning_val = 0;
-
-	sLeftArea[6].end_time = 13.0f;
-	sLeftArea[6].forward_val = 75;
-	sLeftArea[6].turning_val = -128;
-
-	sLeftArea[7].end_time = 16.50f;
-	sLeftArea[7].forward_val = 80;
-	sLeftArea[7].turning_val = -10;
-
-	sLeftArea[8].end_time = 21.60f;
-	sLeftArea[8].forward_val = 72;
-	sLeftArea[8].turning_val = 0;*/
-
 	sLeftArea[0].end_time = 0.5f;
 	sLeftArea[0].forward_val = 60;
 	sLeftArea[0].turning_val = 0;
@@ -66,7 +30,7 @@ void InitAutoData(void)
 	sLeftArea[1].turning_val = 0;
 
 	sLeftArea[2].end_time = 7.5f;
-	sLeftArea[2].forward_val = 80;
+	sLeftArea[2].forward_val = 70;
 	sLeftArea[2].turning_val = 115;
 
 	sLeftArea[3].end_time = 9.5f;
@@ -102,7 +66,7 @@ void InitAutoData(void)
 	sRightArea[1].turning_val = 0;
 
 	sRightArea[2].end_time = 7.5f;
-	sRightArea[2].forward_val = 80;
+	sRightArea[2].forward_val = 70;
 	sRightArea[2].turning_val = -112;
 
 	sRightArea[3].end_time = 9.5f;
@@ -354,6 +318,11 @@ void GetCtrlData(int data_src)
 		StepIndex_Pause = 5;
 		LiftPhaseThreshold = 12.3f;
 		CalcAutoData(CTRL_SRC_RESUME_R2);
+		break;
+	
+	case CTRL_SRC_SLOPE:
+		LiftPhaseThreshold = 5.3f;
+		CtrlVal_Forward = 75;
 		break;
 
 	case CTRL_SRC_REMOTE:

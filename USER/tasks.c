@@ -57,6 +57,10 @@ void ControlTask(void)
 	case RESUME_R2:
 		GetCtrlData(CTRL_SRC_RESUME_R2);
 		break;
+	
+	case SLOPE:
+		GetCtrlData(CTRL_SRC_SLOPE);
+		break;
 
 	case MANUAL:
 		GetCtrlData(CTRL_SRC_REMOTE);
@@ -545,7 +549,7 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 			BEEP_Alert(1);
 			ActivateFlag = STOP;
 			AutoManualFlag++;
-			if (AutoManualFlag == 4)
+			if (AutoManualFlag == 9)
 				AutoManualFlag = IDLE;
 		}
 
@@ -608,14 +612,10 @@ void SubKeyTask_ACTR_POS(uint8_t KeyVal)
 		{
 			if (AutoManualFlag == AUTO_L || AutoManualFlag == AUTO_R || AutoManualFlag == RESUME_L1 || AutoManualFlag == RESUME_R1 || AutoManualFlag == RESUME_L2 || AutoManualFlag == RESUME_R2)
 			{
-				BEEP_Alert(1);
+				//BEEP_Alert(1);
 				MoveActrPosCursor();
 				AutoTime_Flag = 1;
 				ActivateFlag = RUN;
-				if (StepIndex == StepIndex_Pause)
-				{
-					StepIndex_PauseFlag = STEP_CONTINUE;
-				}
 				InitAutoData();
 			}
 			else
@@ -881,28 +881,30 @@ void ScanIOTask(void)
 {
 	static uint8_t shawdow_io_microswitch;
 	static uint8_t shawdow_io_soft_emerge;
+	static uint8_t shawdow_io_start1;
+	static uint8_t shawdow_io_start2;
 	static uint16_t beep_times;
 	static ActrParaTypedef *pActrParaDev = NULL;
 
 	if (IO_SPEEDUP1 == 1 && IO_SPEEDUP2 == 1)
 	{
-		Spd_Factor = 0.82f;
-		Spd_Mu = 0.08f;
+		Spd_Factor = 1.0f;
+		Spd_Mu = 0.10f;
 	}
 	else if (IO_SPEEDUP1 == 1 && IO_SPEEDUP2 == 0)
 	{
-		Spd_Factor = 0.76f;
-		Spd_Mu = 0.060f;
+		Spd_Factor = 0.9f;
+		Spd_Mu = 0.080f;
 	}
 	else if (IO_SPEEDUP1 == 0 && IO_SPEEDUP2 == 1)
 	{
-		Spd_Factor = 0.68f;
-		Spd_Mu = 0.042f;
+		Spd_Factor = 0.8f;
+		Spd_Mu = 0.07f;
 	}
 	else if (IO_SPEEDUP1 == 0 && IO_SPEEDUP2 == 0)
 	{
-		Spd_Factor = 0.60f;
-		Spd_Mu = 0.03f;
+		Spd_Factor = 0.70f;
+		Spd_Mu = 0.05f;
 	}
 
 	if (IO_SOFT_EMERGE == 1)
@@ -968,13 +970,17 @@ void ScanIOTask(void)
 				else
 					AutoManualFlag = AUTO_R;
 			}
+			else if (AutoManualFlag == SLOPE)
+			{
+				AutoManualFlag = SLOPE;
+			}
 		}
 
 		beep_times++;
 		if (beep_times == 1000)
 		{
 			beep_times = 0;
-			BEEP_Error(3);
+			//BEEP_Error(3);
 		}
 	}
 	else
@@ -1040,8 +1046,15 @@ void ScanIOTask(void)
 			}
 			if (ActivateFlag == RUN && actrRefPhase / 4.0f + actrRefRevolution > LiftPhaseThreshold)
 				TIM_SetCompare1(TIM14, 1500);
+			if ((IO_START1 != shawdow_io_start1 && IO_START1 == 1) || (IO_START2 != shawdow_io_start2 && IO_START1 == 2))
+			{
+				if (StepIndex == StepIndex_Pause)
+					StepIndex_PauseFlag = STEP_CONTINUE;
+			}
 		}
 	}
 	shawdow_io_microswitch = IO_MICROSWITCH;
 	shawdow_io_soft_emerge = IO_SOFT_EMERGE;
+	shawdow_io_start1 = IO_START1;
+	shawdow_io_start2 = IO_START2;
 }
